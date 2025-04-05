@@ -1,0 +1,26 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "cyan_candle",
+          "cyan_carpet",
+          "cyan_concrete",
+          "cyan_concrete_powder",
+          "cyan_glazed_terracotta",
+          "cyan_shulker_box",
+          "cyan_stained_glass",
+          "cyan_stained_glass_pane",
+          "cyan_terracotta",
+          "cyan_wool",
+          "damaged_anvil",
+          "dandelion",
+          "dark_oak_button",
+          "dark_oak_door"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 0 run setblock ~ ~ ~ ladder[facing=east]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 1 run setblock ~ ~ ~ ladder[facing=south]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 2 run setblock ~ ~ ~ ladder[facing=north]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 3 run setblock ~ ~ ~ ladder[facing=west]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 0 run setblock ~ ~ ~ ladder[waterlogged=true,facing=east]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 1 run setblock ~ ~ ~ ladder[waterlogged=true,facing=south]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 2 run setblock ~ ~ ~ ladder[waterlogged=true,facing=north]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 3 run setblock ~ ~ ~ ladder[waterlogged=true,facing=west]

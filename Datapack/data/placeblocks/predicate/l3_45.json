@@ -1,0 +1,26 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "soul_torch",
+          "spawner",
+          "sponge",
+          "spore_blossom",
+          "spruce_button",
+          "spruce_door",
+          "spruce_fence",
+          "spruce_fence_gate",
+          "spruce_leaves",
+          "spruce_log",
+          "spruce_planks",
+          "spruce_pressure_plate",
+          "spruce_sign",
+          "spruce_slab"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "tube_coral",
+          "tube_coral_block",
+          "tube_coral_fan",
+          "tuff",
+          "turtle_egg",
+          "twisting_vines",
+          "vine",
+          "warped_button",
+          "warped_door",
+          "warped_fence",
+          "warped_fence_gate",
+          "warped_hyphae",
+          "warped_nylium",
+          "warped_planks",
+          "warped_pressure_plate"
+        ]
+      }
+    }
+  }
+}

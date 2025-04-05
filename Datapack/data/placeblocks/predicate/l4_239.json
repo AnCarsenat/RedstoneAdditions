@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "chiseled_copper",
+          "chiseled_tuff",
+          "chiseled_tuff_bricks"
+        ]
+      }
+    }
+  }
+}

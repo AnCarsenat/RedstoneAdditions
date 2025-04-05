@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "cherry_fence_gate",
+          "bamboo_pressure_plate",
+          "cherry_pressure_plate",
+          "bamboo_sign",
+          "cherry_sign",
+          "bamboo_trapdoor",
+          "cherry_trapdoor",
+          "cherry_log",
+          "cherry_wood",
+          "chiseled_copper",
+          "chiseled_tuff",
+          "chiseled_tuff_bricks"
+        ]
+      }
+    }
+  }
+}

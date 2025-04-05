@@ -1,0 +1,6 @@
+name: redstone_additions
+environment:
+  sdk: 
+#">=3.0.0 <4.0.0"
+# dependencies:
+#   objd: ^0.4.7

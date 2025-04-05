@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "waxed_cut_copper_slab",
+          "waxed_cut_copper_stairs",
+          "waxed_exposed_copper",
+          "waxed_exposed_cut_copper"
+        ]
+      }
+    }
+  }
+}

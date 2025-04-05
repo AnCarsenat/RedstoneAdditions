@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "campfire",
+          "candle",
+          "carrot",
+          "cartography_table",
+          "carved_pumpkin",
+          "cauldron",
+          "glow_berries",
+          "chain",
+          "chest",
+          "chipped_anvil",
+          "chiseled_deepslate",
+          "chiseled_nether_bricks",
+          "chiseled_polished_blackstone",
+          "chiseled_quartz_block",
+          "chiseled_red_sandstone"
+        ]
+      }
+    }
+  }
+}

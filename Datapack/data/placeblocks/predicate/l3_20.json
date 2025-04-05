@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "flowering_azalea",
+          "flowering_azalea_leaves",
+          "furnace",
+          "gilded_blackstone",
+          "glass",
+          "glass_pane",
+          "glow_lichen",
+          "glowstone",
+          "gold_block",
+          "gold_ore",
+          "granite",
+          "granite_slab",
+          "granite_stairs",
+          "granite_wall",
+          "short_grass"
+        ]
+      }
+    }
+  }
+}

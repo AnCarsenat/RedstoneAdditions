@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "light_gray_wool",
+          "light_weighted_pressure_plate",
+          "lightning_rod"
+        ]
+      }
+    }
+  }
+}

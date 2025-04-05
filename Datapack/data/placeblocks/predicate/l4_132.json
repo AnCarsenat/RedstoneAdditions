@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "orange_carpet",
+          "orange_concrete",
+          "orange_concrete_powder",
+          "orange_glazed_terracotta"
+        ]
+      }
+    }
+  }
+}

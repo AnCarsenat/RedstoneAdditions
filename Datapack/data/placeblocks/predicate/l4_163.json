@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "red_nether_brick_slab",
+          "red_nether_brick_stairs",
+          "red_nether_brick_wall"
+        ]
+      }
+    }
+  }
+}

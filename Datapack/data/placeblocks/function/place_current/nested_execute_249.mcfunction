@@ -1,0 +1,6 @@
+execute if score .direction dpb_var matches 0 run setblock ~ ~ ~ dropper[facing=east]
+execute if score .direction dpb_var matches 1 run setblock ~ ~ ~ dropper[facing=south]
+execute if score .direction dpb_var matches 2 run setblock ~ ~ ~ dropper[facing=north]
+execute if score .direction dpb_var matches 3 run setblock ~ ~ ~ dropper[facing=west]
+execute if score .direction dpb_var matches 4 run setblock ~ ~ ~ dropper[facing=up]
+execute if score .direction dpb_var matches 5 run setblock ~ ~ ~ dropper[facing=down]

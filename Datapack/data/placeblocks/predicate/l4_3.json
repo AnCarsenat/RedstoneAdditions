@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "acacia_trapdoor",
+          "acacia_wood",
+          "activator_rail"
+        ]
+      }
+    }
+  }
+}

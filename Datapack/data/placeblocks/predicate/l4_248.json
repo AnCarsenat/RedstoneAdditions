@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "tuff_stairs",
+          "tuff_wall",
+          "waxed_chiseled_copper",
+          "waxed_copper_bulb"
+        ]
+      }
+    }
+  }
+}

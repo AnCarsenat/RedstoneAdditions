@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "stripped_cherry_wood",
+          "tuff_brick_slab",
+          "tuff_brick_stairs",
+          "tuff_brick_wall"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "white_terracotta",
+          "white_wool",
+          "wither_skeleton_skull"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "birch_pressure_plate",
+          "birch_sapling",
+          "birch_sign",
+          "birch_slab",
+          "birch_stairs",
+          "birch_trapdoor",
+          "birch_wood",
+          "black_banner",
+          "black_bed",
+          "black_candle",
+          "cake",
+          "black_carpet"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "dirt_path",
+          "dispenser",
+          "dragon_egg",
+          "dragon_head",
+          "dried_kelp_block",
+          "dripstone_block",
+          "dropper",
+          "emerald_block",
+          "emerald_ore",
+          "enchanting_table",
+          "end_rod",
+          "end_stone",
+          "end_stone_brick_slab",
+          "end_stone_brick_stairs",
+          "end_stone_brick_wall"
+        ]
+      }
+    }
+  }
+}

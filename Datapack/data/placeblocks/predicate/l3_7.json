@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "brown_mushroom_block",
+          "brown_shulker_box",
+          "brown_stained_glass",
+          "brown_stained_glass_pane",
+          "brown_terracotta",
+          "brown_wool",
+          "bubble_coral",
+          "bubble_coral_block",
+          "bubble_coral_fan",
+          "budding_amethyst",
+          "cactus",
+          "calcite"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "mangrove_fence",
+          "mangrove_fence_gate",
+          "mangrove_leaves",
+          "mangrove_log"
+        ]
+      }
+    }
+  }
+}

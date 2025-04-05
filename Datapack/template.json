@@ -1,0 +1,40 @@
+{
+    "pack_mcmeta": {
+        "pack": {
+            "pack_format": 12,
+            "description": "Redstone Additions Datapack"
+        }
+    },
+    "datapack_info": {
+        "namespace": "redditions",
+        "name": "Redstone Additions",
+        "version": "1.0.0",
+        "minecraft_version": "1.21.4"
+    },
+    "functions": {
+        "tick": "redditions:tick",
+        "load": "redditions:load"
+    },
+    "structure": {
+        "data": {
+            "minecraft": {
+                "tags": {
+                    "functions": {
+                        "load.json": {
+                            "values": ["redditions:load"]
+                        },
+                        "tick.json": {
+                            "values": ["redditions:tick"]
+                        }
+                    }
+                }
+            },
+            "redditions": {
+                "functions": {},
+                "recipes": {},
+                "advancements": {},
+                "loot_tables": {}
+            }
+        }
+    }
+}

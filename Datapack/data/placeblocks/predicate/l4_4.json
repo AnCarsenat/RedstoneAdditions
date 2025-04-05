@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "allium",
+          "amethyst_block",
+          "amethyst_cluster",
+          "ancient_debris"
+        ]
+      }
+    }
+  }
+}

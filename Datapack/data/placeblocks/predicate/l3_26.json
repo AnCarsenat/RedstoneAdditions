@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "light_blue_concrete_powder",
+          "light_blue_glazed_terracotta",
+          "light_blue_shulker_box",
+          "light_blue_stained_glass",
+          "light_blue_stained_glass_pane",
+          "light_blue_terracotta",
+          "light_blue_wool",
+          "light_gray_banner",
+          "light_gray_bed",
+          "light_gray_candle",
+          "light_gray_carpet",
+          "light_gray_concrete",
+          "light_gray_concrete_powder",
+          "light_gray_glazed_terracotta",
+          "light_gray_shulker_box"
+        ]
+      }
+    }
+  }
+}

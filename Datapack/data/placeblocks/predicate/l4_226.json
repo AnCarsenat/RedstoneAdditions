@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "dark_oak_hanging_sign",
+          "mangrove_hanging_sign",
+          "bamboo_hanging_sign",
+          "cherry_hanging_sign"
+        ]
+      }
+    }
+  }
+}

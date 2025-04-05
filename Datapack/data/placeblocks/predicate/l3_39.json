@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "purple_stained_glass_pane",
+          "purple_terracotta",
+          "purple_wool",
+          "purpur_block",
+          "purpur_pillar",
+          "purpur_slab",
+          "purpur_stairs",
+          "quartz_block",
+          "quartz_bricks",
+          "quartz_pillar",
+          "quartz_slab",
+          "quartz_stairs"
+        ]
+      }
+    }
+  }
+}

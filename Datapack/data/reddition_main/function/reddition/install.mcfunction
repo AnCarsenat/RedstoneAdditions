@@ -1,0 +1,1 @@
+scoreboard objectives add reddition.temp dummy

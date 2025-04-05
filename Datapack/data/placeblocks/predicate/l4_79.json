@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "fire_coral_fan",
+          "fletching_table",
+          "flower_pot"
+        ]
+      }
+    }
+  }
+}

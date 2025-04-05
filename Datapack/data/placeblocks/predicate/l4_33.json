@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "carved_pumpkin",
+          "cauldron",
+          "glow_berries",
+          "chain"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "crimson_hanging_sign",
+          "warped_hanging_sign",
+          "calibrated_sculk_sensor"
+        ]
+      }
+    }
+  }
+}

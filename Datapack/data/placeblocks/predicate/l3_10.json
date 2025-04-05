@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "cobblestone_wall",
+          "cobweb",
+          "cocoa_beans",
+          "comparator",
+          "composter",
+          "conduit",
+          "copper_block",
+          "copper_ore",
+          "cornflower",
+          "cracked_deepslate_bricks",
+          "cracked_deepslate_tiles",
+          "cracked_nether_bricks",
+          "cracked_polished_blackstone_bricks",
+          "cracked_stone_bricks",
+          "crafting_table"
+        ]
+      }
+    }
+  }
+}

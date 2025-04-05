@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "green_bed",
+          "green_candle",
+          "green_carpet",
+          "green_concrete",
+          "green_concrete_powder",
+          "green_glazed_terracotta",
+          "green_shulker_box",
+          "green_stained_glass",
+          "green_stained_glass_pane",
+          "green_terracotta",
+          "green_wool",
+          "grindstone",
+          "hanging_roots",
+          "hay_block",
+          "heavy_weighted_pressure_plate"
+        ]
+      }
+    }
+  }
+}

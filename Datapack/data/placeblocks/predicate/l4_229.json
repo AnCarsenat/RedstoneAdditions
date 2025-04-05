@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "chiseled_bookshelf",
+          "piglin_head",
+          "pink_petals",
+          "pitcher_plant"
+        ]
+      }
+    }
+  }
+}

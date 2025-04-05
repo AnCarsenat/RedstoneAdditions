@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "prismarine_brick_stairs",
+          "prismarine_bricks",
+          "prismarine_slab",
+          "prismarine_stairs",
+          "prismarine_wall",
+          "pumpkin",
+          "purple_banner",
+          "purple_bed",
+          "purple_candle",
+          "purple_carpet",
+          "purple_concrete",
+          "purple_concrete_powder",
+          "purple_glazed_terracotta",
+          "purple_shulker_box",
+          "purple_stained_glass"
+        ]
+      }
+    }
+  }
+}

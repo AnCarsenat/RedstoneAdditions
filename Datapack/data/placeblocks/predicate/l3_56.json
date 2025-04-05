@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "sculk_vein",
+          "stripped_mangrove_log",
+          "stripped_mangrove_wood",
+          "oak_hanging_sign",
+          "spruce_hanging_sign",
+          "birch_hanging_sign",
+          "jungle_hanging_sign",
+          "acacia_hanging_sign",
+          "dark_oak_hanging_sign",
+          "mangrove_hanging_sign",
+          "bamboo_hanging_sign",
+          "cherry_hanging_sign",
+          "crimson_hanging_sign",
+          "warped_hanging_sign",
+          "calibrated_sculk_sensor"
+        ]
+      }
+    }
+  }
+}

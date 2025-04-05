@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "nether_bricks",
+          "nether_gold_ore",
+          "nether_quartz_ore",
+          "nether_sprouts"
+        ]
+      }
+    }
+  }
+}

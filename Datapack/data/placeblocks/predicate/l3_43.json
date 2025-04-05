@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "shroomlight",
+          "shulker_box",
+          "skeleton_skull",
+          "slime_block",
+          "small_amethyst_bud",
+          "small_dripleaf",
+          "smithing_table",
+          "smoker",
+          "smooth_basalt",
+          "smooth_quartz",
+          "smooth_quartz_slab",
+          "smooth_quartz_stairs"
+        ]
+      }
+    }
+  }
+}

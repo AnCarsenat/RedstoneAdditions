@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "redstone",
+          "repeater",
+          "respawn_anchor",
+          "rooted_dirt",
+          "rose_bush",
+          "sand",
+          "sandstone",
+          "sandstone_slab",
+          "sandstone_stairs",
+          "sandstone_wall",
+          "scaffolding",
+          "sculk_sensor",
+          "sea_lantern",
+          "sea_pickle",
+          "seagrass"
+        ]
+      }
+    }
+  }
+}

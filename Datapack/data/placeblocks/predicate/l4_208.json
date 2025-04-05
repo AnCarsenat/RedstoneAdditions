@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "wet_sponge",
+          "wheat_seeds",
+          "white_banner",
+          "white_bed"
+        ]
+      }
+    }
+  }
+}

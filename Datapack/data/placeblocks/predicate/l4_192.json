@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "stripped_spruce_wood",
+          "stripped_warped_hyphae",
+          "stripped_warped_stem",
+          "sugar_cane"
+        ]
+      }
+    }
+  }
+}

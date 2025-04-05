@@ -1,0 +1,6 @@
+execute if score .direction dpb_var matches 0 run setblock ~ ~ ~ barrel[facing=east]
+execute if score .direction dpb_var matches 1 run setblock ~ ~ ~ barrel[facing=south]
+execute if score .direction dpb_var matches 2 run setblock ~ ~ ~ barrel[facing=north]
+execute if score .direction dpb_var matches 3 run setblock ~ ~ ~ barrel[facing=west]
+execute if score .direction dpb_var matches 4 run setblock ~ ~ ~ barrel[facing=up]
+execute if score .direction dpb_var matches 5 run setblock ~ ~ ~ barrel[facing=down]

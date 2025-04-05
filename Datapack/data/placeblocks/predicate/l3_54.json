@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "ochre_froglight",
+          "frogspawn",
+          "mangrove_button",
+          "mangrove_door",
+          "mangrove_fence",
+          "mangrove_fence_gate",
+          "mangrove_leaves",
+          "mangrove_log",
+          "mangrove_planks",
+          "mangrove_pressure_plate",
+          "mangrove_propagule",
+          "mangrove_roots",
+          "mangrove_sign",
+          "mangrove_slab",
+          "mangrove_stairs"
+        ]
+      }
+    }
+  }
+}
