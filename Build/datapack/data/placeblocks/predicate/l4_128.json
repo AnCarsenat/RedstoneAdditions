@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "oak_leaves",
+          "oak_log",
+          "oak_planks",
+          "oak_pressure_plate"
+        ]
+      }
+    }
+  }
+}

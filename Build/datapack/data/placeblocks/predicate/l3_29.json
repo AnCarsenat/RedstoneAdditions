@@ -1,0 +1,26 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "magenta_carpet",
+          "magenta_concrete",
+          "magenta_concrete_powder",
+          "magenta_glazed_terracotta",
+          "magenta_shulker_box",
+          "magenta_stained_glass",
+          "magenta_stained_glass_pane",
+          "magenta_terracotta",
+          "magenta_wool",
+          "magma_block",
+          "medium_amethyst_bud",
+          "melon",
+          "moss_block",
+          "moss_carpet"
+        ]
+      }
+    }
+  }
+}

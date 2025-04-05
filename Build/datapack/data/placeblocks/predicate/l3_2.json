@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "barrel",
+          "basalt",
+          "beacon",
+          "bee_nest",
+          "beehive",
+          "beetroot_seeds",
+          "bell",
+          "big_dripleaf",
+          "birch_button",
+          "birch_door",
+          "birch_fence",
+          "birch_fence_gate",
+          "birch_leaves",
+          "birch_log",
+          "birch_planks"
+        ]
+      }
+    }
+  }
+}

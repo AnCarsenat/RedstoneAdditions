@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "chiseled_sandstone",
+          "chiseled_stone_bricks",
+          "chorus_flower",
+          "chorus_plant"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "hanging_roots",
+          "hay_block",
+          "heavy_weighted_pressure_plate"
+        ]
+      }
+    }
+  }
+}

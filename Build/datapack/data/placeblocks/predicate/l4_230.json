@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "pitcher_pod",
+          "sniffer_egg",
+          "suspicious_sand",
+          "suspicious_gravel"
+        ]
+      }
+    }
+  }
+}

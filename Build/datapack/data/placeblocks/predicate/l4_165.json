@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "red_sandstone_stairs",
+          "red_sandstone_wall",
+          "red_shulker_box",
+          "red_stained_glass"
+        ]
+      }
+    }
+  }
+}

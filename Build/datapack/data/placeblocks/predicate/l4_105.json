@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "light_blue_stained_glass_pane",
+          "light_blue_terracotta",
+          "light_blue_wool",
+          "light_gray_banner"
+        ]
+      }
+    }
+  }
+}

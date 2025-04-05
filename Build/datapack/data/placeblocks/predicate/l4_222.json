@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "mud_bricks",
+          "muddy_mangrove_roots",
+          "packed_mud"
+        ]
+      }
+    }
+  }
+}

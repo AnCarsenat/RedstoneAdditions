@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "mangrove_sign",
+          "mangrove_slab",
+          "mangrove_stairs"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "polished_granite_slab",
+          "polished_granite_stairs",
+          "poppy",
+          "potato",
+          "red_mushroom",
+          "red_tulip",
+          "spruce_sapling",
+          "warped_fungus",
+          "warped_roots",
+          "white_tulip",
+          "wither_rose",
+          "powder_snow_bucket",
+          "powered_rail",
+          "prismarine",
+          "prismarine_brick_slab"
+        ]
+      }
+    }
+  }
+}

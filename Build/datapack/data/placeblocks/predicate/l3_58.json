@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "bamboo_stairs",
+          "cherry_stairs",
+          "bamboo_mosaic_stairs",
+          "bamboo_slab",
+          "cherry_slab",
+          "bamboo_mosaic_slab",
+          "bamboo_planks",
+          "cherry_planks",
+          "bamboo_button",
+          "cherry_button",
+          "bamboo_door",
+          "cherry_door",
+          "bamboo_fence",
+          "cherry_fence",
+          "bamboo_fence_gate"
+        ]
+      }
+    }
+  }
+}

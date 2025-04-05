@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "orange_tulip",
+          "orange_wool",
+          "oxeye_daisy",
+          "oxidized_copper"
+        ]
+      }
+    }
+  }
+}

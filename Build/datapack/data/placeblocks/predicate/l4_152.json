@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "prismarine_brick_stairs",
+          "prismarine_bricks",
+          "prismarine_slab",
+          "prismarine_stairs"
+        ]
+      }
+    }
+  }
+}

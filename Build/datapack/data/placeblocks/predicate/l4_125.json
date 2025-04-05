@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "nether_wart",
+          "nether_wart_block",
+          "netherite_block",
+          "netherrack"
+        ]
+      }
+    }
+  }
+}

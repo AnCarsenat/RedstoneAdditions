@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "yellow_banner",
+          "yellow_bed",
+          "yellow_candle",
+          "yellow_carpet",
+          "yellow_concrete",
+          "yellow_concrete_powder",
+          "yellow_glazed_terracotta",
+          "yellow_shulker_box",
+          "yellow_stained_glass",
+          "yellow_stained_glass_pane",
+          "yellow_terracotta",
+          "yellow_wool",
+          "zombie_head",
+          "pearlescent_froglight",
+          "verdant_froglight"
+        ]
+      }
+    }
+  }
+}

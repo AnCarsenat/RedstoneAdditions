@@ -1,0 +1,4 @@
+execute if score .direction dpb_var matches 0 run function placeblocks:place_current/nested_execute_715
+execute if score .direction dpb_var matches 1 run function placeblocks:place_current/nested_execute_716
+execute if score .direction dpb_var matches 2 run function placeblocks:place_current/nested_execute_717
+execute if score .direction dpb_var matches 3 run function placeblocks:place_current/nested_execute_718

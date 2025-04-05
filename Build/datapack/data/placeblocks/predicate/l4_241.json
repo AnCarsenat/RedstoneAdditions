@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "crafter",
+          "decorated_pot",
+          "exposed_chiseled_copper",
+          "exposed_copper_bulb"
+        ]
+      }
+    }
+  }
+}

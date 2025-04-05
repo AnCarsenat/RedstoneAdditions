@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "deepslate_iron_ore",
+          "deepslate_lapis_ore",
+          "deepslate_redstone_ore",
+          "deepslate_tile_slab",
+          "deepslate_tile_stairs",
+          "deepslate_tile_wall",
+          "deepslate_tiles",
+          "detector_rail",
+          "diamond_block",
+          "diamond_ore",
+          "diorite",
+          "diorite_slab",
+          "diorite_stairs",
+          "diorite_wall",
+          "dirt"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "bamboo_block",
+          "stripped_bamboo_block",
+          "cherry_leaves",
+          "cherry_sapling",
+          "chiseled_bookshelf",
+          "piglin_head",
+          "pink_petals",
+          "pitcher_plant",
+          "pitcher_pod",
+          "sniffer_egg",
+          "suspicious_sand",
+          "suspicious_gravel",
+          "torchflower",
+          "torchflower_seeds",
+          "bamboo_mosaic"
+        ]
+      }
+    }
+  }
+}

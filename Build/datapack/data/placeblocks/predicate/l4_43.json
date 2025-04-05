@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "cracked_polished_blackstone_bricks",
+          "cracked_stone_bricks",
+          "crafting_table"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "mangrove_trapdoor",
+          "mangrove_wood",
+          "mud",
+          "mud_brick_slab",
+          "mud_brick_stairs",
+          "mud_brick_wall",
+          "mud_bricks",
+          "muddy_mangrove_roots",
+          "packed_mud",
+          "sculk",
+          "sculk_catalyst",
+          "sculk_shrieker"
+        ]
+      }
+    }
+  }
+}

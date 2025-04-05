@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "dark_oak_planks",
+          "dark_oak_pressure_plate",
+          "dark_oak_sapling",
+          "dark_oak_sign"
+        ]
+      }
+    }
+  }
+}

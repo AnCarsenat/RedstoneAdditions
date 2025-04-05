@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "pink_wool",
+          "piston",
+          "player_head",
+          "podzol",
+          "pointed_dripstone",
+          "polished_andesite",
+          "polished_andesite_slab",
+          "polished_andesite_stairs",
+          "polished_basalt",
+          "polished_blackstone",
+          "polished_blackstone_brick_slab",
+          "polished_blackstone_brick_stairs"
+        ]
+      }
+    }
+  }
+}

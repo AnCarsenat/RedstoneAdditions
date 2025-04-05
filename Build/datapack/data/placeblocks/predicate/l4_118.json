@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "magenta_wool",
+          "magma_block",
+          "medium_amethyst_bud",
+          "melon"
+        ]
+      }
+    }
+  }
+}

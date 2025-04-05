@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "polished_blackstone_slab",
+          "polished_blackstone_stairs",
+          "polished_blackstone_wall",
+          "polished_deepslate"
+        ]
+      }
+    }
+  }
+}

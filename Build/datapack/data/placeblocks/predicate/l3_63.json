@@ -1,0 +1,25 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "waxed_oxidized_copper_door",
+          "waxed_oxidized_copper_grate",
+          "waxed_oxidized_copper_trapdoor",
+          "waxed_weathered_chiseled_copper",
+          "waxed_weathered_copper_bulb",
+          "waxed_weathered_copper_door",
+          "waxed_weathered_copper_grate",
+          "waxed_weathered_copper_trapdoor",
+          "weathered_chiseled_copper",
+          "weathered_copper_bulb",
+          "weathered_copper_door",
+          "weathered_copper_grate",
+          "weathered_copper_trapdoor"
+        ]
+      }
+    }
+  }
+}

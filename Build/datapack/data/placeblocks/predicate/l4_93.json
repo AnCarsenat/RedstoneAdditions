@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "horn_coral",
+          "horn_coral_block",
+          "horn_coral_fan"
+        ]
+      }
+    }
+  }
+}

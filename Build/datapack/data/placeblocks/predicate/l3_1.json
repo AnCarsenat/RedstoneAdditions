@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "allium",
+          "amethyst_block",
+          "amethyst_cluster",
+          "ancient_debris",
+          "andesite",
+          "andesite_slab",
+          "andesite_stairs",
+          "andesite_wall",
+          "anvil",
+          "melon_seeds",
+          "pumpkin_seeds",
+          "azalea",
+          "azalea_leaves",
+          "azure_bluet",
+          "bamboo"
+        ]
+      }
+    }
+  }
+}

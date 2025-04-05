@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "crimson_fence",
+          "crimson_fence_gate",
+          "crimson_fungus"
+        ]
+      }
+    }
+  }
+}

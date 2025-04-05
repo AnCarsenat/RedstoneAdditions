@@ -1,0 +1,25 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "dark_prismarine_stairs",
+          "daylight_detector",
+          "dead_brain_coral",
+          "dead_brain_coral_block",
+          "dead_brain_coral_fan",
+          "dead_bubble_coral",
+          "dead_bubble_coral_block",
+          "dead_bubble_coral_fan",
+          "dead_bush",
+          "dead_fire_coral",
+          "dead_fire_coral_block",
+          "dead_fire_coral_fan",
+          "dead_horn_coral"
+        ]
+      }
+    }
+  }
+}

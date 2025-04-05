@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "crimson_slab",
+          "crimson_stairs",
+          "crimson_stem",
+          "crimson_trapdoor"
+        ]
+      }
+    }
+  }
+}

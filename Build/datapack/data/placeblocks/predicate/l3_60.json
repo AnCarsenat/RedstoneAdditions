@@ -1,0 +1,26 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "copper_bulb",
+          "copper_door",
+          "copper_grate",
+          "copper_trapdoor",
+          "crafter",
+          "decorated_pot",
+          "exposed_chiseled_copper",
+          "exposed_copper_bulb",
+          "exposed_copper_door",
+          "exposed_copper_grate",
+          "exposed_copper_trapdoor",
+          "heavy_core",
+          "oxidized_chiseled_copper",
+          "oxidized_copper_bulb"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "orange_carpet",
+          "orange_concrete",
+          "orange_concrete_powder",
+          "orange_glazed_terracotta",
+          "orange_shulker_box",
+          "orange_stained_glass",
+          "orange_stained_glass_pane",
+          "orange_terracotta",
+          "orange_tulip",
+          "orange_wool",
+          "oxeye_daisy",
+          "oxidized_copper",
+          "oxidized_cut_copper",
+          "oxidized_cut_copper_slab",
+          "oxidized_cut_copper_stairs"
+        ]
+      }
+    }
+  }
+}

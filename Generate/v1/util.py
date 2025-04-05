@@ -3,7 +3,13 @@ import os
 class Mcfunction:
     def __init__(self, file_location):
         self.file_location = file_location
-        self.file = open(file_location, "w", encoding="utf-8")
+
+        if not os.path.exists(file_location):
+            os.makedirs(os.path.dirname(file_location), exist_ok=True)
+            self.file = open(file_location, "w", encoding="utf-8")
+        else:
+            self.file = open(file_location, "w", encoding="utf-8")
+
         self._write_header()
 
     def _write_header(self):
@@ -26,11 +32,32 @@ class Mcfunction:
     def write_line(self, text):
         self.file.write(text + "\n")
 
+    def write_lines(self, lines):
+        for line in lines:
+            self.write_line(line)
+
     def write(self, text):
         self.file.write(text)
 
+    def __str__(self):
+        return f"{self.__class__.__name__}(file_location='{self.file_location}')"  
+
 
 class BlockPlace:
+
+    class blockTickMcfunction:
+        def __init__(self, name, commands=[str]):
+            self.name = name
+            self.commands = commands
+
+        def write_line(self, text):
+            self.mcfunction.write_line(text)
+
+        def close(self):
+            self.mcfunction.close()
+
+        def __str__(self):
+            return f"{self.__class__.__name__}(name='{self.name}', commands={self.commands})"
 
     class FacingTypes:
         # New static members for direct access
@@ -40,15 +67,20 @@ class BlockPlace:
         GATE = {2: "north", 3: "south", 4: "west", 5: "east"}
         LINK = {2: "east", 3: "west", 4: "north", 5: "south"}
 
-
-    def __init__(self, block: str, facing_type: dict[int, str], block_tick:function=None):
+    def __init__(
+        self,
+        block: str,
+        facing_type: dict[int, str],
+        block_tick: blockTickMcfunction = None,
+    ):
         self.block_tick = block_tick
         self.block = block
         self.facing_type = facing_type
 
     def __str__(self):
-        return f"BlockPlace({self.block}, {self.facing_type})"
-       
+        return f"{self.__class__.__name__}(block='{self.block}', facing_type={self.facing_type}, block_tick={self.block_tick})"
+
+
 class Item:
     def __init__(
         self,
@@ -57,8 +89,8 @@ class Item:
         item_model: str,
         item_name: str,
         additional_item_data: str,
-        entity_data: str,
-        entity_tags: list[str],
+        entity_data: str = None,
+        entity_tags: list[str] = None,
         block_place: BlockPlace = None,
     ):
         self.name = name
@@ -74,7 +106,11 @@ class Item:
         return f"{self.name}: {self.item_model}, {self.item_name}, {self.entity_data}"
 
     def generate_give_command(self):
-        entity_data = {"id": self.entity_data["id"], "Tags": self.entity_tags}
+        entity_data = (
+            "{}"
+            if not self.entity_data
+            else {"id": self.entity_data["id"], "Tags": self.entity_tags}
+        )
 
         command_parts = [
             f"give @s {self.item_id}[",
@@ -85,16 +121,17 @@ class Item:
 
         if self.additional_item_data:
             command_parts.append(self.additional_item_data + ",")
-
-        command_parts.append(f"minecraft:entity_data={entity_data}")
+        if self.entity_data:
+            command_parts.append(f"minecraft:entity_data={entity_data}")
 
         return "".join(command_parts) + "]"
 
     def generate_child_entities_selector(self):
         return f"@e[type={self.item_id},nbt={{Tags:{self.entity_tags}}}]"
-    
-    def generate_child_entities_selector_from_id(self,id,long=False):
-        if long: return f"@e[type={id},nbt={{Tags:{self.entity_tags}}}]"
+
+    def generate_child_entities_selector_from_id(self, id, long=False):
+        if long:
+            return f"@e[type={id},nbt={{Tags:{self.entity_tags}}}]"
         return f"@e[type={id},tag={self.entity_tags[0]}]"
 
     def generate_is_holding_item(self):
@@ -109,15 +146,27 @@ class Item:
         if self.block_place:
             return self.block_place.block
         return None
+    
+
+
 
 # Constants for paths
-REDDITION_ROOT = os.path.dirname(os.path.dirname(__file__))
-DATA_DIR = os.path.join(REDDITION_ROOT, "data")
+REDDITION_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+DATA_DIR = os.path.join(REDDITION_ROOT, "Build", "datapack")
+BUILD_PATH = os.path.join(REDDITION_ROOT, "Build")
+BUILD_DATAPACK_PATH = os.path.join(BUILD_PATH, "datapack")
+
+print(f"REDDITION_ROOT: {REDDITION_ROOT}")
+print(f"DATA_DIR: {DATA_DIR}")
+print(f"BUILD_PATH: {BUILD_PATH}")
+print(f"BUILD_DATAPACK_PATH: {BUILD_DATAPACK_PATH}")
+
 
 def setup_working_directory():
-    working_directory = os.path.join(DATA_DIR, "reddition")
+    working_directory = os.path.join(DATA_DIR)
     os.makedirs(working_directory, exist_ok=True)
     return working_directory
+
 
 def make_necessary_folder(file_path):
     os.makedirs(os.path.dirname(file_path), exist_ok=True)

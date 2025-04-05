@@ -1,0 +1,24 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "creeper_head",
+          "crimson_button",
+          "crimson_door",
+          "crimson_fence",
+          "crimson_fence_gate",
+          "crimson_fungus",
+          "crimson_hyphae",
+          "crimson_nylium",
+          "crimson_planks",
+          "crimson_pressure_plate",
+          "crimson_roots",
+          "crimson_sign"
+        ]
+      }
+    }
+  }
+}

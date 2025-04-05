@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "gray_glazed_terracotta",
+          "gray_shulker_box",
+          "gray_stained_glass",
+          "gray_stained_glass_pane"
+        ]
+      }
+    }
+  }
+}

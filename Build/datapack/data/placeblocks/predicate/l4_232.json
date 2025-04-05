@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "bamboo_stairs",
+          "cherry_stairs",
+          "bamboo_mosaic_stairs",
+          "bamboo_slab"
+        ]
+      }
+    }
+  }
+}

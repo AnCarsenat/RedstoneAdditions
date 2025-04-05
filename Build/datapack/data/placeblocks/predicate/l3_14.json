@@ -1,0 +1,26 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "dark_oak_fence",
+          "dark_oak_fence_gate",
+          "dark_oak_leaves",
+          "dark_oak_log",
+          "dark_oak_planks",
+          "dark_oak_pressure_plate",
+          "dark_oak_sapling",
+          "dark_oak_sign",
+          "dark_oak_slab",
+          "dark_oak_stairs",
+          "dark_oak_trapdoor",
+          "dark_oak_wood",
+          "dark_prismarine",
+          "dark_prismarine_slab"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 0 run setblock ~ ~ ~ nether_brick_stairs[facing=east]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 1 run setblock ~ ~ ~ nether_brick_stairs[facing=south]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 2 run setblock ~ ~ ~ nether_brick_stairs[facing=north]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 3 run setblock ~ ~ ~ nether_brick_stairs[facing=west]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 0 run setblock ~ ~ ~ nether_brick_stairs[waterlogged=true,facing=east]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 1 run setblock ~ ~ ~ nether_brick_stairs[waterlogged=true,facing=south]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 2 run setblock ~ ~ ~ nether_brick_stairs[waterlogged=true,facing=north]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 3 run setblock ~ ~ ~ nether_brick_stairs[waterlogged=true,facing=west]

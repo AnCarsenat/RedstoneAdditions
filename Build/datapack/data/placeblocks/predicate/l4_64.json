@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "dead_horn_coral_block",
+          "dead_horn_coral_fan",
+          "dead_tube_coral",
+          "dead_tube_coral_block"
+        ]
+      }
+    }
+  }
+}

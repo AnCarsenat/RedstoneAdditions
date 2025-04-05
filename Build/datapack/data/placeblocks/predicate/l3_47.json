@@ -1,0 +1,25 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "stripped_acacia_log",
+          "stripped_acacia_wood",
+          "stripped_birch_log",
+          "stripped_birch_wood",
+          "stripped_crimson_hyphae",
+          "stripped_crimson_stem",
+          "stripped_dark_oak_log",
+          "stripped_dark_oak_wood",
+          "stripped_jungle_log",
+          "stripped_jungle_wood",
+          "stripped_oak_log",
+          "stripped_oak_wood",
+          "stripped_spruce_log"
+        ]
+      }
+    }
+  }
+}

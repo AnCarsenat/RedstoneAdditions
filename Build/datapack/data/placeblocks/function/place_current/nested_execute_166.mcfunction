@@ -1,0 +1,8 @@
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 0 run setblock ~ ~ ~ crimson_trapdoor[facing=east]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 1 run setblock ~ ~ ~ crimson_trapdoor[facing=south]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 2 run setblock ~ ~ ~ crimson_trapdoor[facing=north]
+execute if score .waterlogged dpb_var matches 0 if score .direction dpb_var matches 3 run setblock ~ ~ ~ crimson_trapdoor[facing=west]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 0 run setblock ~ ~ ~ crimson_trapdoor[waterlogged=true,facing=east]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 1 run setblock ~ ~ ~ crimson_trapdoor[waterlogged=true,facing=south]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 2 run setblock ~ ~ ~ crimson_trapdoor[waterlogged=true,facing=north]
+execute if score .waterlogged dpb_var matches 1 if score .direction dpb_var matches 3 run setblock ~ ~ ~ crimson_trapdoor[waterlogged=true,facing=west]

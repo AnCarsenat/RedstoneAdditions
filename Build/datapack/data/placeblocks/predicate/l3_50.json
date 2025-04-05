@@ -1,0 +1,27 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "warped_sign",
+          "warped_slab",
+          "warped_stairs",
+          "warped_stem",
+          "warped_trapdoor",
+          "warped_wart_block",
+          "waxed_copper_block",
+          "waxed_cut_copper",
+          "waxed_cut_copper_slab",
+          "waxed_cut_copper_stairs",
+          "waxed_exposed_copper",
+          "waxed_exposed_cut_copper",
+          "waxed_exposed_cut_copper_slab",
+          "waxed_exposed_cut_copper_stairs",
+          "waxed_oxidized_copper"
+        ]
+      }
+    }
+  }
+}

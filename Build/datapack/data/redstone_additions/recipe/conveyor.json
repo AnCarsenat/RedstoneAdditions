@@ -1,0 +1,15 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "###",
+        "RCi",
+        "###"
+    ],
+    "key": {
+        "#": "minecraft:cobblestone",
+        "R": "minecraft:redstone",
+        "C": "minecraft:copper_block",
+        "i": "minecraft:iron_ingot"
+    },
+    "result": {}
+}   

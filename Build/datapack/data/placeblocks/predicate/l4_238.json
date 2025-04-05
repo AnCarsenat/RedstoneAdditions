@@ -1,0 +1,15 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "cherry_trapdoor",
+          "cherry_log",
+          "cherry_wood"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "pink_bed",
+          "pink_candle",
+          "pink_carpet",
+          "pink_concrete"
+        ]
+      }
+    }
+  }
+}

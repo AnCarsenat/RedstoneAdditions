@@ -1,0 +1,16 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": [
+          "prismarine_wall",
+          "pumpkin",
+          "purple_banner",
+          "purple_bed"
+        ]
+      }
+    }
+  }
+}
