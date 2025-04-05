@@ -1,0 +1,540 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft 1.14\saves\Genetic Evolution"
+desc "Evolve some zombies"
+
+import common
+import math
+
+$CenterX = 0
+$CenterZ = 0
+
+$GeneMax = 1000
+
+$WanderVZ = 0
+$WanderVY = 1
+$WanderCooldown = 2
+$WanderFuse = 3
+$WanderDRY = 4
+$MateEnergy = 5
+$BabyEnergy = 6
+$AntiGrav = 7
+$BoredomTime = 8
+$BoredomWander = 9
+$Jitter = 10
+$BlockedWander = 11
+$BlockedVZ = 12
+$BlockedVY = 13
+$BlockedCooldown = 14
+$BlockedFuse = 15
+$TargetVZ = 16
+$TargetVY = 17
+$TargetCooldown = 18
+$TargetFuse = 19
+$NumGenes = 20
+
+$GeneNames = [
+	'Wander AI: Horizontal TNT Velocity',
+	'Wander AI: Vertical TNT Velocity',
+	'Wander AI: TNT Cooldown',
+	'Wander AI: TNT Fuse',
+	'Wander AI: Random Rotation Speed',
+	'Mating Energy Threshold',
+	'Baby Energy Transfer',
+	'Anti-Gravity',
+	'Boredome Time Threshold',
+	'Boredom Wander Time',
+	'Jitter Magnitude',
+	'Blocked AI: Rotation Bias',
+	'Blocked AI: Horizontal TNT Velocity',
+	'Blocked AI: Vertical TNT Velocity',
+	'Blocked AI: TNT Cooldown',
+	'Blocked AI: TNT Fuse',
+	'Target AI: Horizontal TNT Velocity',
+	'Target AI: Vertical TNT Velocity',
+	'Target AI: TNT Cooldown',
+	'Target AI: TNT Fuse',
+]
+	
+
+$SlotNames = [
+	'feet',
+	'legs',
+	'chest',
+	'head'
+]
+$ArmorNames = [
+	'leather_boots{Unbreakable:1b}',
+	'leather_leggings{Unbreakable:1b}',
+	'leather_chestplate{Unbreakable:1b}',
+	'leather_helmet{Unbreakable:1b}'
+]
+
+$AdultTicks = 600
+$SightRange = 20
+$MutationRate = 20
+
+define @Body : @Entity[type=zombie, tag=Body]
+	create {Tags:["Body"],Invulnerable:1, PersistenceRequired:1, CustomNameVisible:1}
+	array genes[$NumGenes]
+	custom_name_visible: CustomNameVisible byte 1
+	is_baby: IsBaby byte 1
+	
+	function set_rotation()
+		unless @Position do create @Position
+		/tp @Position ~ ~ ~ ~ ~
+		@s.rx = @Position.rx
+		@s.ry = @Position.ry
+		@s.rot_y = @s.ry
+		@s.boredom++
+		@s.targetting = True
+	end
+	
+	function initialize()
+		for $slot in $range(4)
+			$slot_name = $SlotNames[$slot]
+			$armor_name = $ArmorNames[$slot]
+			/replaceitem entity @s armor.$slot_name $armor_name
+			color = 0
+			for $c in $range(3)
+				color *= 256
+				color += @s.genes[$slot * 3 + $c] / 4
+			end
+			/execute store result entity @s ArmorItems[$slot].tag.display.color int 1 run scoreboard players get Global color
+		end
+		
+		@s.cooldown = 20
+		@s.boredom = 0
+		@s.force_wander = 0
+		@s.rot_y = rand(0, 360000)
+		@s.children = 0
+	end
+	
+	function update_energy()
+		switch @s.energy
+			case $e in $range(1000)
+				@s.{CustomName} = "\"Energy: $e\""
+			end
+			case 1000 to 10000
+				@s.{CustomName} = "\"Energy: 1000+\""
+			end
+		end
+	end
+	
+	function create_adult()
+		@Body.current = False
+		@s.current = True
+		@baby = @Body[current,distance=0,limit=1]
+		
+		at @s
+			as create @Body
+				/tp @s ~ ~ ~ ~ ~
+				for $gene in $range($NumGenes)
+					@s.genes[$gene] = @baby.genes[$gene]
+				end
+				@s.initialize()
+				@s.energy = @baby.energy
+				@s.cooldown = @baby.cooldown
+				@s.boredom = @baby.boredom
+				@s.force_wander = @baby.force_wander
+				@s.rot_y = @baby.rot_y
+				@s.age = @baby.age
+				@s.generation = @baby.generation
+				@s.children = @baby.children
+				@s.<vel> = @baby.<vel>
+			end
+		end
+	end
+end
+
+define @TNTCarrier : @Entity[type=armor_stand, tag=TNTCarrier]
+	create {Tags:["TNTCarrier"], Invisible:1b, Invulnerable:1b, Marker:1b, Passengers:[{id:"minecraft:tnt", Fuse:40s, Tags:["DummyTNT"]}]}
+	fuse: Passengers[0].Fuse short 1
+end
+
+@NearTNTCarrier = @TNTCarrier[distance=..3]
+
+define @TNTPhysics : @Entity[type=armor_stand, tag=TNTPhysics]
+	create {Tags:["TNTPhysics"], Invisible:1b, Invulnerable:1b}
+	carrier: @NearTNTCarrier
+end
+
+define @DummyTNT : @Entity[type=tnt, tag=DummyTNT]
+	create {Tags:["DummyTNT"], Fuse:40s}
+	fuse: Fuse short 1
+end
+
+define @FoodCarrier : @Entity[type=armor_stand, tag=FoodCarrier]
+	create {Tags:["FoodCarrier"], Invisible:1b, Invulnerable:1b, Marker:1b, Passengers:[{id:"minecraft:falling_block", Time:1b, NoGravity:1b, BlockState:{Name:"minecraft:melon"}, Tags:["Food"]}]}
+	time: Passengers[0].Time byte 1
+end
+
+define @Food : @Entity[type=falling_block, tag=Food]
+	time: Time byte 1
+end
+
+function create_body()
+	as create @Body
+		for gene = 0 to $NumGenes-1
+			@s.genes[gene] = rand($GeneMax)
+		end
+		
+		@s.is_baby = True
+		@s.energy = 100
+		@s.generation = 0
+		@s.update_energy()
+
+		@s.initialize()
+	end
+end
+
+
+function kill_all_bodies()
+	/kill @Body
+	/kill @FoodCarrier
+	/kill @Food
+end
+
+function populate40()
+	 at @p ~ 0 ~
+		for i = 1 to 40
+			create_body()
+			/spreadplayers $CenterX $CenterZ 1 99 false @Body
+		end
+	 end
+end
+
+function walls()
+	/fill -100 54 -100 100 100 -101 stone_bricks
+	/fill -100 54 100 100 100 101 stone_bricks
+	/fill -100 54 -100 -101 100 100 stone_bricks
+	/fill 100 54 -100 101 100 100 stone_bricks	
+end
+
+reset
+	tell @a '{G[\[Create Body\]](call create_body) {R[\[Kill Bodies\]](call kill_all_bodies) {B[\[Populate 40\]](call populate40) {W[\[Create Walls\]](call walls)'
+	as @Body do @s.custom_name_visible = True
+	
+	$NewGenes = []
+	for $gene in $NewGenes
+		as @Body
+			@s.genes[$gene] = rand($GeneMax)
+		end
+	end
+end
+
+clock main
+	<jitter> = <rand(-20,20),0,rand(-20,20)>
+	rand_wander = rand(-30, 30)
+	
+	unless @Position do create @Position
+
+	for @body in @Body
+		at @s
+			@s.age++
+			@s.fire = 0
+			/effect give @s minecraft:slowness 1 10 true
+			
+			@s.part_cooldown--
+			
+			@s.<vel> += <jitter> * @s.genes[$Jitter] / 1000
+			
+			@s.vy += (@s.genes[$AntiGrav] - $GeneMax / 2) * 180 / $GeneMax
+			@s.targetting = False
+			
+			at ~ ~0.5 ~ if block ^ ^ ^1 air
+				@s.blocked = False
+			else
+				@s.blocked = True
+			end
+			
+			if @s.boredom > @s.genes[$BoredomTime]
+				@s.force_wander = @s.genes[$BoredomWander]
+				@s.boredom = 0
+			end
+			
+			if @s.force_wander
+				@s.force_wander--
+				if @s.part_cooldown <= 0
+					at @s eyes
+						/particle minecraft:nautilus ^ ^ ^ 0.4 0.4 0.4 0.2 2 force
+					end
+					@s.part_cooldown = 3
+				end
+			end
+			
+			
+			@s.wander = True
+
+			@s.willing = False
+			mating_threshold = @s.genes[$MateEnergy] / 5
+			baby_energy = @s.genes[$BabyEnergy] / 5
+			if @s.energy >= mating_threshold and @s.energy >= baby_energy and @s.age > $AdultTicks and @s.force_wander == 0
+				@s.willing = True
+				at @s eyes ^ ^ ^ if @s.part_cooldown <= 0
+					/particle minecraft:heart ~ ~ ~ 0.2 0.2 0.2 0.2 1 force
+					@s.part_cooldown = 4
+				end
+			end
+			
+			@s.seeking_mate = False
+			if @s.willing
+				as @Body[distance=1..$SightRange,sort=nearest,limit=1,willing]
+					@body.seeking_mate = True
+					@body.wander = False
+					at @body facing @s
+						@body.set_rotation()
+					end
+					
+					at @s if @body[distance=..2]
+						/particle flash ~ ~ ~ 0 0 0 0 1 force
+						@s.willing = False
+						@body.willing = False
+						
+						@s.boredom = 0
+						@body.boredom = 0
+						
+						baby_energy = @s.genes[$BabyEnergy] / 5 + @body.genes[$BabyEnergy] / 5
+						
+						@s.energy -= @s.genes[$BabyEnergy] / 5
+						@s.update_energy()
+						@body.energy -= @body.genes[$BabyEnergy] / 5
+						@body.update_energy()
+
+						@Body.mate = False
+						@s.mate = True
+						@mate = @Body[mate,limit=1,distance=..5]
+						
+						as create @Body
+							for $gene in $range($NumGenes)
+								randomize_gene = rand(16)
+								
+								if randomize_gene == 0
+									@s.genes[$gene] = rand($GeneMax)
+								else
+									prop = rand(100)
+									@s.genes[$gene] = @body.genes[$gene] * prop / 100 + @mate.genes[$gene] * (100-prop) / 100 + rand(-$MutationRate,$MutationRate)
+								end
+								
+								if @s.genes[$gene] < 0
+									@s.genes[$gene] = 0
+								end
+								if @s.genes[$gene] > 1000
+									@s.genes[$gene] = 1000
+								end
+							end
+							@s.energy = baby_energy
+							@s.is_baby = True
+							@s.update_energy()
+							
+							if @body.generation > @mate.generation
+								@s.generation = @body.generation + 1
+							else
+								@s.generation = @mate.generation + 1
+							end
+							
+							@body.children++
+							@mate.children++
+							
+							@s.initialize()
+						end
+					end
+				end
+			end
+			
+			unless @s.seeking_mate if @s.force_wander == 0 as @Food[distance=..$SightRange,limit=1,sort=nearest]
+				@body.wander = False
+				at @body facing @s
+					@body.set_rotation()
+				end
+			end
+			
+			if @s.wander
+				if @s.blocked
+					@s.rot_y += (@s.genes[$BlockedWander] - ($GeneMax / 2)) * 30
+				end
+				
+				@s.ry = @s.rot_y
+				@s.rot_y += rand_wander * @s.genes[$WanderDRY]
+				@s.rx = 0
+				
+				@s.boredom = 0
+			end
+			
+			@s[cooldown > 0].cooldown--
+			if @s.cooldown == 0 at @s
+				if @s.blocked
+					up = @s.genes[$BlockedVY]
+					backward = @s.genes[$BlockedVZ]
+					@s.cooldown = @s.genes[$BlockedCooldown] * 80 / $GeneMax
+					fuse = @s.genes[$BlockedFuse]
+				else
+					if @s.targetting
+						up = @s.genes[$TargetVY]
+						backward = @s.genes[$TargetVZ]
+						@s.cooldown = @s.genes[$TargetCooldown] * 80 / $GeneMax
+						fuse = @s.genes[$TargetFuse]
+					else
+						up = @s.genes[$WanderVY]
+						backward = @s.genes[$WanderVZ]
+						@s.cooldown = @s.genes[$WanderCooldown] * 80 / $GeneMax
+						fuse = @s.genes[$WanderFuse]
+					end
+				end
+				
+				
+				as @Position
+					/tp @s ~ ~ ~ ~ ~
+					<start> = @s.<pos>
+					/tp @s ^ ^ ^1
+					<forward> = @s.<pos> - <start>
+					/tp @s ~ ~ ~ ~ ~
+					/tp @s ^ ^1 ^
+					<up> = @s.<pos> - <start>
+				end
+				at ~ ~1 ~
+					@s.energy--
+					@s.update_energy()
+					
+					as create @TNTCarrier
+						/tp @s ~ ~ ~ ~ ~
+						@s.fuse = fuse * 80 / $GeneMax
+						id = &@s
+					end
+					
+					as create @TNTPhysics
+						/tp @s ~ ~ ~ ~ ~
+						@s.<vel> = <up> * (up - $GeneMax / 2) / $GeneMax
+						@s.<vel> -= <forward> * backward / $GeneMax
+						/playsound minecraft:entity.tnt.primed hostile @a
+						@s.carrier = id
+					end
+					
+					as @DummyTNT[distance=..2] unless @s.initialized
+						@s.fuse = fuse * 80 / $GeneMax + 1
+						v = @s.fuse
+						@s.initialized = True
+					end
+				end
+			end
+			
+			food_eaten = 0
+			/execute store result score Global food_eaten run kill @Food[distance=..1]
+			@s.energy += food_eaten * 20
+			@s.update_energy()
+			if food_eaten > 0
+				@s.boredom = 0
+			end
+		
+			if @s.energy <= 0
+				/kill @s
+			end
+			
+			if @s.age > $AdultTicks and @s.is_baby == 1
+				@s.create_adult()
+				/tp @s ~ -100 ~
+				/kill @s
+			end
+		end
+	end
+	
+	as @DummyTNT at @s
+		if @s.fuse == @s.prev_fuse
+			# This is necessary because TNT doesn't tick down if it's far enough away
+			/kill @s
+		end
+		@s.prev_fuse = @s.fuse
+		
+		if @s.fuse == 1
+			/particle minecraft:explosion ~ ~ ~ 2 2 2 0 5 force
+			/playsound minecraft:entity.generic.explode hostile @a
+			<pos> = @s.<pos>
+			<x1, y1, z1> = <pos>
+			as @Body[distance=..8]
+				<x2, y2, z2> = @s.<pos>
+				y2 += scale
+				distsq = ((x1-x2)^2 + (y1-y2)^2 + (z1-z2)^2) / scale
+				
+				@s.<vel> += ((@s.<pos> + <0, scale, 0>) - <pos>) * scale * 3 / distsq
+			end
+			/kill @s
+		end
+	end
+	
+	as @TNTPhysics at @s
+		as @s.carrier
+			/tp @s ~ ~ ~ ~ ~
+		else
+			/kill @s
+		end
+	end
+	
+	cleanup_timer++
+	if cleanup_timer >= 20
+		cleanup()
+		cleanup_timer = 0
+	end
+end
+
+clock hover
+	@Body.hover = False
+	as @Player at @s eyes ^ ^ ^5
+		@Body[distance=..2].hover = True
+	end
+	as @Body
+		if @s.hover
+			@s.hover_timer++
+			@s.glowing = True
+		else
+			@s.hover_timer = 0
+			@s.glowing = False
+		end
+	end
+	
+	as @Body[hover_timer == 10]
+		for $gene in $range($NumGenes)
+			val = @s.genes[$gene]
+			$gene_name = $GeneNames[$gene]
+			tell @a '(val) - $gene_name'
+		end
+		
+		age = @s.age / 1200
+		tell @a 'Age: (age) minutes'
+		generation = @s.generation
+		tell @a 'Generation: (generation)'
+		children = @s.children
+		tell @a 'Children: (children)'
+	end
+end
+
+function cleanup()		
+	as @TNTCarrier
+		unless @s.fuse > 0
+			/kill @s
+		end			
+	end
+
+	as @Food
+		@s.on_ground = False
+		@s.time = 1
+	end
+	
+	as @FoodCarrier
+		unless @s.time > 0
+			/kill @s
+		end
+	end
+end
+
+clock spawn_food_around_player
+	food_cooldown--
+	if food_cooldown <= 0
+		at @p ~ 0 ~
+			as create @FoodCarrier
+				/spreadplayers $CenterX $CenterZ 1 99 true @s
+				at @s
+					/tp @s ~ ~ ~ ~ ~
+				end
+			end
+			food_cooldown = 25
+		end
+	end
+end

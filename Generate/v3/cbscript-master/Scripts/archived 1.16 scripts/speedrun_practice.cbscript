@@ -1,0 +1,1148 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft 1.16\saves\datapack"
+desc "Tools for Practicing Speedruns"
+
+
+import common
+import lootable_shulker_box
+import random
+import math
+
+@Crystal = @Entity[type=end_crystal]
+define @CrystalMarker = @Entity[type=area_effect_cloud, tag=CrystalMarker]
+	create {
+		Tags:["CrystalMarker"],
+		Duration:-1,
+		Age:-2147483648,
+		WaitTime:-2147483648
+	}
+end
+define @BarsMarker = @Entity[type=area_effect_cloud, tag=BarsMarker]
+	create {
+		Tags:["BarsMarker"],
+		Duration:-1,
+		Age:-2147483648,
+		WaitTime:-2147483648
+	}
+end
+define @EnderDragon = @Entity[type=ender_dragon]
+	phase: DragonPhase int 1
+	create {
+		DragonPhase: 0
+	}
+end
+
+define @Arrow = @Entity[type=arrow]
+	in_ground: inGround byte 1
+end
+
+predicate plains {
+	condition: 'location_check',
+	predicate: {
+		biome : 'plains'
+	}
+}
+
+predicate savanna {
+	condition: 'location_check',
+	predicate: {
+		biome : 'savanna'
+	}
+}
+
+predicate desert {
+	condition: 'location_check',
+	predicate: {
+		biome : 'desert'
+	}
+}
+
+predicate in_overworld {
+	condition: 'location_check',
+	predicate: {
+		dimension: 'overworld'
+	}
+}
+
+predicate in_the_nether {
+	condition: 'location_check',
+	predicate: {
+		dimension: 'the_nether'
+	}
+}
+
+predicate in_the_end {
+	condition: 'location_check',
+	predicate: {
+		dimension: 'the_end'
+	}
+}
+
+
+define block_tag ground
+	grass_block
+	dirt
+	stone
+	sand
+	gravel
+	sandstone
+	podzol
+	coarse_dirt
+	ice
+	water
+	end_stone
+	soul_sand
+	soul_soil
+	basalt
+	netherrack
+	nether_quartz_ore
+	nether_gold_ore
+	nether_bricks
+	blackstone
+	crimson_nylium
+	warped_nylium
+end
+
+define block_tag stronghold
+	stone_bricks
+	mossy_stone_bricks
+	cracked_stone_bricks
+	chiseled_stone_bricks
+	stone_brick_stairs
+	mossy_stone_brick_slab
+	stone_brick_slab
+	infested_stone_bricks
+	infested_mossy_stone_bricks
+	infested_cracked_stone_bricks
+	infested_chiseled_stone_bricks
+	mossy_stone_brick_stairs
+	iron_door
+	stone_button
+	oak_door
+	chest
+	wall_torch
+	iron_bars
+	bookshelf
+	oak_fence
+	ladder
+end
+
+define block_tag passthrough
+	air
+	cave_air
+	grass
+	fern
+	dead_bush
+	seagrass
+	tall_seagrass
+	piston_head
+	tall_grass
+	oak_sapling
+	spruce_sapling
+	birch_sapling
+	jungle_sapling
+	acacia_sapling
+	dark_oak_sapling
+	powered_rail
+	detector_rail
+	dandelion
+	poppy
+	blue_orchid
+	allium
+	azure_bluet
+	red_tulip
+	orange_tulip
+	white_tulip
+	pink_tulip
+	oxeye_daisy
+	brown_mushroom
+	red_mushroom
+	torch
+	wall_torch
+	redstone_wire
+	wheat
+	ladder
+	rail
+	lever
+	redstone_torch
+	redstone_wall_torch
+	stone_button
+	sugar_cane
+	attached_pumpkin_stem
+	attached_melon_stem
+	pumpkin_stem
+	melon_stem
+	nether_wart
+	tripwire_hook
+	tripwire
+	carrots
+	potatoes
+	oak_button
+	spruce_button
+	birch_button
+	jungle_button
+	acacia_button
+	dark_oak_button
+	activator_rail
+	sunflower
+	lilac
+	rose_bush
+	peony
+	tall_grass
+	large_fern
+	chorus_plant
+	chorus_flower
+	beetroots
+	structure_void
+	kelp
+	kelp_plant
+	dead_tube_coral
+	dead_brain_coral
+	dead_bubble_coral
+	dead_fire_coral
+	dead_horn_coral
+	tube_coral
+	brain_coral
+	bubble_coral
+	fire_coral
+	horn_coral
+	dead_tube_coral_wall_fan
+	dead_brain_coral_wall_fan
+	dead_bubble_coral_wall_fan
+	dead_fire_coral_wall_fan
+	dead_horn_coral_wall_fan
+	tube_coral_wall_fan
+	brain_coral_wall_fan
+	bubble_coral_wall_fan
+	fire_coral_wall_fan
+	horn_coral_wall_fan
+	dead_tube_coral_fan
+	dead_brain_coral_fan
+	dead_bubble_coral_fan
+	dead_fire_coral_fan
+	dead_horn_coral_fan
+	tube_coral_fan
+	brain_coral_fan
+	bubble_coral_fan
+	fire_coral_fan
+	horn_coral_fan
+	void_air
+end
+
+reset
+	/scoreboard objectives add Practice trigger
+	/scoreboard objectives add deaths deathCount
+	/scoreboard objectives add beds_clicked minecraft.used:minecraft.white_bed
+	/gamerule keepInventory true
+	@Player.display_options()
+end
+
+$DisplayOptions = 1
+$CreateLavaPool = 2
+$NearestFortress = 3
+$RandomFortress = 4
+$PostVillageHotbar = 5
+$RandomPlainsVillage = 6
+$RandomSavannaVillage = 7
+$RandomRuinedPortal = 8
+$NearStronghold = 9
+$PostNetherHotbar = 10
+$InStronghold = 11
+$RandomDesertVillage = 12
+$ResetEnd = 13
+$EndPortal = 14
+$TrackCrystalShots = 15
+$ResetEndPerch = 16
+$RestoreDeath = 17
+$NoEndermen = 18
+$RandomBastion = 19
+$EWPerch = 20
+$NSPerch = 21
+$StrongholdEntrance = 22
+
+$Plains = 0
+$Savanna = 1
+$Desert = 2
+
+$Overworld = 0
+$Nether = 1
+$End = 2
+
+define @Player = @Player
+	function display_options()
+		tell @s ' '
+		tell @s ' === Speedrun Practice ==='
+		tell @s '{g[\[To Random Plains Village\]](/trigger Practice set $RandomPlainsVillage){-'
+		tell @s '{y[\[To Random Savanna Village\]](/trigger Practice set $RandomSavannaVillage){-'
+		tell @s '{Y[\[To Random Desert Village\]](/trigger Practice set $RandomDesertVillage){-'
+		tell @s '{G[\[Post-Village Hotbar\]](/trigger Practice set $PostVillageHotbar){-'
+		tell @s '{m[\[To Random Ruined Portal\]](/trigger Practice set $RandomRuinedPortal){-'
+		tell @s '{R[\[Create Lava Pool\]](/trigger Practice set $CreateLavaPool){-'
+		tell @s '{r[\[To Nearest Fortress\]](/trigger Practice set $NearestFortress){- {r[\[To Random Fortress\]](/trigger Practice set $RandomFortress){-'
+		tell @s '{K[\[To Random Bastion\]](/trigger Practice set $RandomBastion){-'
+		tell @s '{C[\[Post-Nether Hotbar\]](/trigger Practice set $PostNetherHotbar){-'
+		tell @s '{wStronghold: [\[<300m Away\]](/trigger Practice set $NearStronghold){- {w[\[Inside\]](/trigger Practice set $InStronghold){- {w[\[Entrance\]](/trigger Practice set $StrongholdEntrance){-'
+		tell @s '{m[\[Create End Portal\]](/trigger Practice set $EndPortal){-'
+		tell @s '{M[\[Reset the End\]](/trigger Practice set $ResetEnd){- {M[\[Reset & Perch\]](/trigger Practice set $ResetEndPerch) {M[\[EW Perch\]](/trigger Practice set $EWPerch) {M[\[NS Perch\]](/trigger Practice set $NSPerch){-'
+		if @s.track_shots
+			tell @s '{G[\[Track Crystal Shots (On)\]](/trigger Practice set $TrackCrystalShots){-'
+		else
+			tell @s '{R[\[Track Crystal Shots (Off)\]](/trigger Practice set $TrackCrystalShots){-'
+		end
+		if @s.no_enders
+			tell @s '{G[\[No Endermen (On)\]](/trigger Practice set $NoEndermen){-'
+		else
+			tell @s '{R[\[No Endermen (Off)\]](/trigger Practice set $NoEndermen){-'
+		end
+		tell @s '{c[\[Restore from Death\]](/trigger Practice set $RestoreDeath){-'
+	end
+	
+	function perform_practice()
+		switch @s.Practice
+			case $DisplayOptions
+				@s.display_options()
+			end
+			case $CreateLavaPool
+				at @s do create_lava_pool()
+			end
+			case $NearestFortress
+				tell @s 'Finding the closest fortress...'
+				at @s unless in_the_nether in the_nether
+					/tp @s ~ ~ ~
+				end
+				at @s do go_to_fortress()
+			end
+			case $RandomFortress
+				tell @s 'Finding a random fortress...'
+				at @s unless in_the_nether in the_nether
+					/tp @s ~ ~ ~
+				end
+				at @s
+					unless @Position2 do create @Position2
+					randx = randint(-124000, 124000)
+					randz = randint(-124000, 124000)
+					@Position2.<pos> = <randx, 0, randz> * scale
+					at @Position2 do go_to_fortress()
+				end
+			end
+			case $RandomBastion
+				tell @s 'Finding a random bastion...'
+				at @s unless in_the_nether in the_nether
+					/tp @s ~ ~ ~
+				end
+				at @s
+					unless @Position2 do create @Position2
+					randx = randint(-124000, 124000)
+					randz = randint(-124000, 124000)
+					@Position2.<pos> = <randx, 0, randz> * scale
+					at @Position2 do go_to_bastion()
+				end
+			end
+			case $PostVillageHotbar
+				@s.post_village_hotbar()
+			end
+			case $PostNetherHotbar
+				@s.post_nether_hotbar()
+			end
+			case $RandomPlainsVillage
+				tell @s 'Finding random plains village...'
+				go_to_random_village()
+				@s.find_village = True
+				@s.village_type = $Plains
+			end
+			case $RandomSavannaVillage
+				tell @s 'Finding random savanna village...'
+				go_to_random_village()
+				@s.find_village = True
+				@s.village_type = $Savanna
+			end
+			case $RandomDesertVillage
+				tell @s 'Finding random desert village...'
+				go_to_random_village()
+				@s.find_village = True
+				@s.village_type = $Desert
+			end
+			case $RandomRuinedPortal
+				done = False
+				while not done
+					randomize_overworld_position()
+					at @Position do locate_overworld{'locate ruined_portal'}()
+					at @Position
+						if success
+								/spreadplayers ~ ~ 0 5 true @s
+							done = True
+						end
+					end
+				end
+			end
+			case $NearStronghold
+				in overworld
+					unless @Position do create @Position
+					at @Position
+						/tp @s ~ ~ ~
+					end
+					locate_overworld{'locate stronghold'}()
+					at @Position
+						/spreadplayers ~ ~ 0 212 true @s
+					end
+				end
+			end
+			case $InStronghold
+				in overworld
+					unless @Position do create @Position
+					at @Position
+						/tp @s ~ ~ ~
+					end
+					locate_overworld{'locate stronghold'}()
+					at @Position
+						for step = 1 to 500
+							@s.random_spot()
+							at @s if block ~ ~-1 ~ stronghold and block ~ ~ ~ passthrough and block ~ ~1 ~ passthrough
+								step = 1000000
+							end
+						end
+					end
+				end
+			end
+			case $StrongholdEntrance
+				in overworld
+					unless @Position do create @Position
+					at @Position
+						/tp @s ~ ~ ~
+					end
+					locate_overworld{'locate stronghold'}()
+					@Position.x = ((@Position.x / scale) / 16 * 16 + 4) * scale + scale / 2
+					@Position.z = ((@Position.z / scale) / 16 * 16 + 4) * scale + scale / 2
+					@Position.y = 64000
+					at @Position
+						/tp @s ~ ~ ~
+					end
+					@s.strong_entrance = 2
+					/effect give @s resistance 5 4 true
+				end
+			end			
+			case $ResetEnd
+				reset_the_end(0)
+			end
+			case $ResetEndPerch
+				reset_the_end($ResetEndPerch)
+			end
+			case $NSPerch
+				reset_the_end($NSPerch)
+			end
+			case $EWPerch
+				reset_the_end($EWPerch)
+			end
+			case $EndPortal
+				at @s do create_end_portal()
+			end
+			case $TrackCrystalShots
+				if @s.track_shots
+					@s.track_shots = False
+				else
+					@s.track_shots = True
+				end
+				@s.display_options()
+			end
+			case $NoEndermen
+				if @s.no_enders
+					@s.no_enders = False
+				else
+					@s.no_enders = True
+				end
+				@s.display_options()
+			end
+			case $RestoreDeath
+				if @s.has_restore
+					switch @s.restore_dim
+						case $Overworld
+							at @s unless predicate in_overworld in overworld
+								/tp @s ~ ~ ~
+							end
+							at @s
+								unless @Position do create @Position
+								@Position.<pos> = @s.<restore_pos>
+								@Position.rx = @s.restore_rx
+								@Position.ry = @s.restore_ry
+								at @Position
+									/tp @s ~ ~ ~ ~ ~
+								end
+							end
+						end
+						case $Nether
+							at @s unless predicate in_the_nether in the_nether
+								/tp @s ~ ~ ~
+							end
+							at @s
+								unless @Position2 do create @Position2
+								@Position2.<pos> = @s.<restore_pos>
+								@Position2.rx = @s.restore_rx
+								@Position2.ry = @s.restore_ry
+								at @Position2
+									/tp @s ~ ~ ~ ~ ~
+								end
+							end
+						end
+						case $End
+							at @s unless predicate in_the_end in the_end
+								/tp @s ~ ~ ~
+							end
+							at @s
+								unless @Position3 do create @Position3
+								@Position3.<pos> = @s.<restore_pos>
+								@Position3.rx = @s.restore_rx
+								@Position3.ry = @s.restore_ry
+								at @Position3
+									/tp @s ~ ~ ~ ~ ~
+								end
+							end
+						end
+					end
+					/effect give @s resistance 5 4 true
+				else
+					tell @s "You don't have any restore point."
+				end
+			end
+		end
+		
+		if @s.Practice > 0
+			@s.display_options()
+		end
+		
+		@s.Practice = 0
+		/scoreboard players enable @s Practice
+	end
+	
+	function random_spot()
+		height = randint(2, 6)
+		switch height
+			case $height in $range(2, 6)
+				$under = $height * 10
+				/spreadplayers ~ ~ 0 50 under $under true @s
+			end
+		end
+	end
+	
+	function post_village_hotbar()
+		/clear
+		/replaceitem entity @s hotbar.0 stone_axe
+		/replaceitem entity @s hotbar.1 stone_pickaxe
+		/replaceitem entity @s hotbar.2 water_bucket
+		/replaceitem entity @s hotbar.3 stone_shovel
+		/replaceitem entity @s hotbar.4 flint_and_steel
+		/replaceitem entity @s hotbar.5 crafting_table
+		/replaceitem entity @s hotbar.6 oak_planks 16
+		/replaceitem entity @s hotbar.7 cobblestone 16
+		/replaceitem entity @s hotbar.8 bread 64
+		/replaceitem entity @s weapon.offhand shield
+		/replaceitem entity @s inventory.0 stone_hoe
+		/replaceitem entity @s inventory.1 arrow 64
+		for $slot in $range(9, 18)
+			/replaceitem entity @s inventory.$slot white_bed
+		end
+		
+		/effect give @s minecraft:instant_health 1 10
+		/effect give @s minecraft:saturation 1 5
+	end
+	
+	function post_nether_hotbar()
+		/clear
+		/replaceitem entity @s hotbar.0 stone_axe
+		/replaceitem entity @s hotbar.1 stone_pickaxe
+		/replaceitem entity @s hotbar.2 water_bucket
+		/replaceitem entity @s hotbar.3 stone_shovel
+		/replaceitem entity @s hotbar.4 ender_eye 16
+		/replaceitem entity @s hotbar.5 crafting_table
+		/replaceitem entity @s hotbar.6 bow
+		/replaceitem entity @s hotbar.7 netherrack 64
+		/replaceitem entity @s hotbar.8 bread 64
+		/replaceitem entity @s weapon.offhand shield
+		
+		/replaceitem entity @s inventory.0 cobblestone 16
+		/replaceitem entity @s inventory.1 oak_planks 16
+		/replaceitem entity @s inventory.2 stone_hoe
+		/replaceitem entity @s inventory.3 arrow 64
+		/replaceitem entity @s inventory.4 flint_and_steel
+		/replaceitem entity @s inventory.5 obsidian 5
+		/replaceitem entity @s inventory.6 respawn_anchor 2
+		
+		for $slot in $range(9, 23)
+			/replaceitem entity @s inventory.$slot white_bed
+		end
+		
+		/effect give @s minecraft:instant_health 1 10
+		/effect give @s minecraft:saturation 1 5
+	end
+end
+
+clock main
+	as @Player unless @s.logged_in == 1
+		@s.display_options()
+	end
+		
+	/scoreboard players reset * logged_in
+	@Player.logged_in = 1
+
+	@Player.perform_practice()
+	
+	as @Player[find_village] at @s
+		find_village()
+	end
+	
+	as @Player[strong_entrance] at @s
+		go_to_stronghold_entrance()
+	end
+	
+	mark_end_crystals()
+	
+	track_crystal_shots()
+	
+	track_dragon_damage()
+	
+	track_death()
+	
+	as @Player
+		@s.<prev_pos> = @s.<pos>
+		@s.prev_rx = @s.rx
+		@s.prev_ry = @s.ry
+	end
+	
+	in overworld
+		/kill @Position
+		/kill @Position2
+		/kill @Position3
+	end
+	in the_nether
+		/kill @Position
+		/kill @Position2
+		/kill @Position3
+	end
+	in the_end
+		/kill @Position
+		/kill @Position2
+		/kill @Position3
+	end
+	
+	if @Player[no_enders,limit=1]
+		as @e[type=enderman]
+			move @s ~ ~-500 ~
+			/kill @s
+		end
+	end
+end
+
+function go_to_fortress()
+	locate_nether_structure{'fortress'}()
+
+	at @Position2
+		for step = 1 to 1000
+			/spreadplayers ~ ~ 0 100 under 80 true @s
+			at @s if block ~ ~-1 ~ nether_bricks
+				step = 1000000
+			end
+		end
+	end
+end
+
+function go_to_bastion()
+	locate_nether_structure{'bastion_remnant'}()
+
+	at @Position2
+		/spreadplayers ~ ~ 0 20 under 100 true @s
+	end
+end
+
+
+function ground_at_cursor{$distance}()
+	unless @Position do create @Position
+	
+	as @Position at ~ ~1.6 ~ at ^ ^ ^$distance
+		/tp @s ~ ~ ~
+		while True at @s if block ground
+			/tp @s ~ ~1 ~
+		end
+		while True at @s unless block ground
+			/tp @s ~ ~-1 ~
+		end
+	end
+end
+
+function create_end_portal()
+	ground_at_cursor{5}()
+	at @Position
+		/fill ~-1 ~ ~-1 ~1 ~ ~1 end_portal
+		/fill ~-2 ~1 ~-2 ~2 ~3 ~2 air
+		/fill ~-1 ~ ~-2 ~1 ~ ~-2 end_portal_frame[facing=south,eye=true]
+		/fill ~2 ~ ~-1 ~2 ~ ~1 end_portal_frame[facing=west,eye=true]
+		/fill ~-1 ~ ~2 ~1 ~ ~2 end_portal_frame[facing=north,eye=true]
+		/fill ~-2 ~ ~-1 ~-2 ~ ~1 end_portal_frame[facing=east,eye=true]
+	end
+end
+
+function create_lava_pool()
+	ground_at_cursor{15}()
+	
+	dx = 0
+	dz = 0
+	for i = 1 to 100
+		mv = randint(0, 4)
+		r = randint(0, 7)
+		nr = randint(-6, 1)
+				
+		switch mv
+			case 0
+				if dx < r
+					move @Position ~1 ~ ~
+					dx++
+				end
+			end
+			case 1
+				if dx > nr
+					move @Position ~-1 ~ ~
+					dx--
+				end
+			end
+			case 2
+				if dz < r
+					move @Position ~ ~ ~1
+					dz++
+				end
+			end
+			case 3
+				if dz > nr
+					move @Position ~ ~ ~-1
+					dz--
+				end
+			end
+		end
+		at @Position
+			create_lava_column()
+		end
+	end
+end
+
+function create_lava_column()
+	depth = randint(1, 3)
+	/setblock ~ ~ ~ lava
+	/setblock ~ ~-1 ~ stone
+	surround_with_stone()
+	
+	if depth == 2
+		/setblock ~ ~-1 ~ lava
+		/setblock ~ ~-2 ~ stone
+		at ~ ~-1 ~ do surround_with_stone()
+	end
+	for $i in $range(1, 5)
+		/setblock ~ ~$i ~ air
+	end
+end
+
+function surround_with_stone()
+	unless block ~-1 ~ ~ lava
+		/setblock ~-1 ~ ~ stone
+	end
+	unless block ~1 ~ ~ lava
+		/setblock ~1 ~ ~ stone
+	end
+	unless block ~ ~ ~-1 lava
+		/setblock ~ ~ ~-1 stone
+	end
+	unless block ~ ~ ~1 lava
+		/setblock ~ ~ ~1 stone
+	end
+	unless block ~-1 ~ ~-1 lava
+		/setblock ~-1 ~ ~-1 stone
+	end
+	unless block ~1 ~ ~1 lava
+		/setblock ~1 ~ ~1 stone
+	end
+	unless block ~1 ~ ~-1 lava
+		/setblock ~1 ~ ~-1 stone
+	end
+	unless block ~-1 ~ ~1 lava
+		/setblock ~-1 ~ ~1 stone
+	end
+end
+
+function locate_nether_structure{$structure}()
+	in the_nether unless @Position2 do create @Position2
+	/tp @Position2 ~ ~ ~
+	dist = result
+		/locate $structure
+	xdir = 1
+	zdir = 1
+	steps = 0
+
+	while dist > 2 and steps < 500
+		xdist = dist
+		if xdir > 0
+			$locate_nether_step(1, 0)
+		else
+			$locate_nether_step(-1, 0)
+		end
+		
+		at @Position2 do dist = result
+			/locate $structure
+		
+		if xdist < dist
+			xdir *= -1
+		end
+		
+		zdist = dist
+		if zdir > 0
+			$locate_nether_step(0, 1)
+		else
+			$locate_nether_step(0, 1)
+		end
+		
+		at @Position2 do dist = result
+			/locate $structure
+		
+		if zdist < dist
+			zdir *= -1
+		end
+		
+		steps++
+	end
+end
+
+macro $locate_nether_step($dx, $dz)
+	if dist > 300
+		$mdx = $dx * 100
+		$mdz = $dz * 100
+		move @Position2 ~$mdx ~ ~$mdz
+	else if dist > 30
+		$mdx = $dx * 10
+		$mdz = $dz * 10
+		move @Position2 ~$mdx ~ ~$mdz
+	else
+		move @Position2 ~$dx ~ ~$dz
+	end
+end
+
+
+function locate_overworld{$command}()
+	in overworld unless @Position do create @Position
+	/tp @Position ~ ~ ~
+	dist = result
+		/$command
+	xdir = 1
+	zdir = 1
+	steps = 0
+
+	while dist > 2 and steps < 100
+		xdist = dist
+		if xdir > 0
+			$locate_overworld_step(1, 0)
+		else
+			$locate_overworld_step(-1, 0)
+		end
+		
+		at @Position do dist = result
+			/$command
+		
+		if xdist < dist
+			xdir *= -1
+		end
+		
+		zdist = dist
+		if zdir > 0
+			$locate_overworld_step(0, 1)
+		else
+			$locate_overworld_step(0, -1)
+		end
+		
+		at @Position do dist = result
+			/$command
+		
+		if zdist < dist
+			zdir *= -1
+		end
+		
+		steps++
+	end
+end
+
+macro $locate_overworld_step($dx, $dz)
+	if dist > 300
+		$mdx = $dx * 100
+		$mdz = $dz * 100
+		move @Position ~$mdx ~ ~$mdz
+	else if dist > 30
+		$mdx = $dx * 10
+		$mdz = $dz * 10
+		move @Position ~$mdx ~ ~$mdz
+	else
+		move @Position ~$dx ~ ~$dz
+	end
+end
+
+function go_to_stronghold_entrance()
+	@s.strong_entrance--
+	
+	if @s.strong_entrance == 0
+		in_stairs = False
+		/tp @s ~ 64 ~
+		for y = 64 to 0 by -1						
+			move @s ~ ~-1 ~
+			at @s
+				for $dx,$dz in [[1,1],[-1,1],[1,-1],[-1,-1]]
+					if block ~$dx ~ ~$dz smooth_stone_slab
+						in_stairs = True
+					end
+				end
+				if in_stairs and block ~ ~ ~ passthrough unless block ~ ~-1 ~ passthrough
+					y = 0
+				end
+			end		
+		end
+	end
+end
+
+
+function find_village()
+	right_biome = False
+	if @s.village_type == $Plains and predicate plains
+		right_biome = True
+	end
+	if @s.village_type == $Savanna and predicate savanna
+		right_biome = True
+	end
+	if @s.village_type == $Desert and predicate desert
+		right_biome = True
+	end
+
+	if right_biome
+		at @s
+			/spreadplayers ~ ~ 0 100 true @s
+		end
+		
+		@s.find_village = False
+		tell @s 'Found village!'
+	end
+	
+	if @s.find_village
+		go_to_random_village()
+	end
+end
+
+function go_to_random_village()
+	randomize_overworld_position()
+
+	at @Position do locate_overworld{'locate village'}()	
+	/tp @s @Position
+	/effect give @s resistance 5 4 true
+end
+
+function randomize_overworld_position()
+	randx = randint(-1000000, 1000000)
+	randz = randint(-1000000, 1000000)
+	
+	in overworld unless @Position do create @Position
+	@Position.<pos> = <randx, 200, randz> * scale
+end
+
+function mark_end_crystals()
+	as @Crystal	at @s unless @CrystalMarker[distance=..0.25]
+		in the_end unless @Position3 do create @Position3
+		create @CrystalMarker
+		
+		<pos> = @s.<pos>
+		
+		for dx = -2 to 2
+			for dy = -2 to 2
+				for dz = -2 to 2
+					@Position3.<pos> = <pos> + <dx, dy, dz> * scale
+					at @Position3 if block iron_bars
+						create @BarsMarker
+					end
+				end
+			end
+		end
+	end
+	
+	at @EnderDragon[limit=1]
+		/bossbar set dragon players @Player[distance=..256]
+		/execute store result bossbar dragon value run data get entity @EnderDragon[limit=1] Health 1
+	end
+end
+
+function reset_the_end(perch)
+	in the_end
+		/kill @e[type=ender_dragon]
+		/kill @e[type=minecraft:experience_orb]
+		in the_end unless @Position3 do create @Position3
+		if perch == $ResetEndPerch
+			rx = 10*randint(-1, 2)
+			rz = 10*randint(-1, 2)
+			@Position3.<pos> = <rx, 100, rz> * scale
+			at @Position3
+				/summon ender_dragon ~ ~ ~ {DragonPhase: 3}
+			end
+		else if perch == $EWPerch
+			east = randint(0, 2)
+			ry = 100 * scale + randint(-4000, 4000)
+			offset = randint(-2000, 2000)
+			
+			if east
+				@Position3.<pos> = <15000, ry, offset>
+				at @Position3
+					/summon ender_dragon ~ ~ ~ {DragonPhase: 3, Rotation:[-90f, 0f]}
+				end
+			else
+				@Position3.<pos> = <-15000, ry, offset>
+				at @Position3
+					/summon ender_dragon ~ ~ ~ {DragonPhase: 3, Rotation:[90f, 0f]}
+				end
+			end
+		else if perch == $NSPerch
+			north = randint(0, 2)
+			ry = 100 * scale + randint(-4000, 4000)
+			
+			if north
+				@Position3.<pos> = <0, ry, 15000>
+				at @Position3
+					/summon ender_dragon ~ ~ ~ {DragonPhase: 3}
+				end
+			else
+				@Position3.<pos> = <0, ry, -15000>
+				at @Position3
+					/summon ender_dragon ~ ~ ~ {DragonPhase: 3, Rotation:[180f, 0f]}
+				end
+			end
+		else
+			create @EnderDragon 0 100 0
+		end
+		
+		#<rand_offset> = <randint(-20000,20000),0,randint(-20000,20000)>
+		#as @EnderDragon
+		#	@s.<pos> += <rand_offset>
+		#end
+
+		at @CrystalMarker unless @Crystal[distance=..1]
+			/summon end_crystal
+		end
+		at @BarsMarker
+			/setblock ~ ~ ~ iron_bars
+		end
+		
+		/fill -2 40 -2 2 70 2 air replace end_portal
+		/fill 0 40 0 0 75 0 air replace dragon_egg
+		/fill -10 40 -10 10 75 10 air replace fire
+		
+		/bossbar add dragon "Ender Dragon"
+		/bossbar set dragon max 200
+		/bossbar set dragon color pink
+	end
+	
+	@Player.beds_clicked = 0
+end
+
+function display_dimension()
+	if predicate in_overworld
+		tell @a 'overworld'
+	end
+	
+	if predicate in_the_nether
+		tell @a 'the_nether'
+	end
+	
+	if predicate in_the_end
+		tell @a 'the_end'
+	end
+end
+
+function track_crystal_shots()
+	as @Crystal at @s facing @Arrow[distance=..20,nbt={inGround:0b},limit=1,sort=nearest] at ^10 ^ ^10 facing @s
+		as @Player[track_shots] unless @s.tracking_shot
+			<x1, y1, z1> = @s.<prev_pos>
+			<x2, y2, z2> = @s.<pos>
+			if x1 == x2 and y1 == y2 and z1 == z2 and @s.prev_rx == @s.rx and @s.prev_ry == @s.ry
+				@s.<old_pos> = @s.<pos>
+				@s.old_rx = @s.rx
+				@s.old_ry = @s.ry
+				/tp @s ~ ~ ~ ~-45 ~20
+				if @s[gamemode=creative]
+					@s.old_gamemode = 1
+				else
+					@s.old_gamemode = 0
+				end
+				/gamemode spectator @s
+				
+				@s.tracking_shot = True
+			end
+		end
+	end
+	
+	as @Player[tracking_shot] at @s
+		if @Arrow[distance=..30,nbt={inGround:0b}]
+			@s.not_tracking = 0
+		else
+			@s.not_tracking++
+			
+			if @s.not_tracking < 10 and @s.prev_rx == @s.rx and @s.prev_ry == @s.ry
+			else
+				in the_end unless @Position3 do create @Position3
+				@Position3.<pos> = @s.<old_pos>
+				@Position3.rx = @s.old_rx
+				@Position3.ry = @s.old_ry
+				at @Position3
+					/tp @s ~ ~ ~ ~ ~
+				end
+				@s.tracking_shot = False
+				if @s.old_gamemode == 1
+					/gamemode creative @s
+				else
+					/gamemode survival @s
+				end
+			end
+		end
+	end
+end
+
+function track_dragon_damage()
+	hp = @EnderDragon[limit=1].hp
+	
+	if hp < old_hp
+		damage = old_hp - hp
+		tell @Player '(damage) damage to dragon'
+	end
+	
+	if hp <= 0 and old_hp > 0
+		as @Player
+			tell @s "{wUsed {C(@s.beds_clicked) {wBeds"
+			subtitle @s "{wUsed {C(@s.beds_clicked) {wBeds"
+			title @s 10 80 10 ""
+			@s.beds_clicked = 0
+		end
+		@Player.display_options()
+		/fill -10 40 -10 10 75 10 air replace fire
+	end
+	
+	old_hp = hp
+end
+
+function track_death()
+	as @Player at @s
+		if @s.deaths > @s.prev_deaths
+			@s.<restore_pos> = @s.<last_pos>
+			@s.restore_rx = @s.last_rx
+			@s.restore_ry = @s.last_ry
+			@s.restore_dim = @s.last_dim
+			@s.has_restore = True
+			@s.display_options()
+		else
+			@s.<last_pos> = @s.<pos>
+			@s.last_rx = @s.rx
+			@s.last_ry = @s.ry
+			if predicate in_overworld
+				@s.last_dim = $Overworld
+			else if predicate in_the_nether
+				@s.last_dim = $Nether
+			else
+				@s.last_dim = $End
+			end
+		end
+		
+		@s.prev_deaths = @s.deaths
+	end
+end

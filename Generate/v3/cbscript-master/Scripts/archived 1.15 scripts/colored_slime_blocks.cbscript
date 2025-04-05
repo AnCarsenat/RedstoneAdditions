@@ -1,0 +1,562 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft 1.14\saves\SethBling's World 1.14"
+desc "Colored slime blocks for piston machines"
+
+import common
+import piston_pushable
+
+define block_tag sticky
+	slime_block
+	white_stained_glass
+	orange_stained_glass
+	magenta_stained_glass
+	light_blue_stained_glass
+	yellow_stained_glass
+	lime_stained_glass
+	pink_stained_glass
+	gray_stained_glass
+	light_gray_stained_glass
+	cyan_stained_glass
+	purple_stained_glass
+	blue_stained_glass
+	brown_stained_glass
+	green_stained_glass
+	red_stained_glass
+	black_stained_glass
+end
+
+$Colors = [
+	'white_stained_glass',
+	'orange_stained_glass',
+	'magenta_stained_glass',
+	'light_blue_stained_glass',
+	'yellow_stained_glass',
+	'lime_stained_glass',
+	'pink_stained_glass',
+	'gray_stained_glass',
+	'light_gray_stained_glass',
+	'cyan_stained_glass',
+	'purple_stained_glass',
+	'blue_stained_glass',
+	'brown_stained_glass',
+	'green_stained_glass',
+	'red_stained_glass',
+	'black_stained_glass',
+]
+
+$Deltas = [
+	(0, -1, 0),
+	(0, 1, 0),
+	(0, 0, -1),
+	(0, 0, 1),
+	(-1, 0, 0),
+	(1, 0, 0),
+]
+
+$PullDeltas = [
+	(0, 1, 0),
+	(0, -1, 0),
+	(0, 0, 1),
+	(0, 0, -1),
+	(1, 0, 0),
+	(-1, 0, 0),
+]
+
+$SideDeltas = [
+	[$Deltas[2], $Deltas[3], $Deltas[4], $Deltas[5], $PullDeltas[0]],
+	[$Deltas[2], $Deltas[3], $Deltas[4], $Deltas[5], $PullDeltas[1]],
+	[$Deltas[0], $Deltas[1], $Deltas[4], $Deltas[5], $PullDeltas[2]],
+	[$Deltas[0], $Deltas[1], $Deltas[4], $Deltas[5], $PullDeltas[3]],
+	[$Deltas[0], $Deltas[1], $Deltas[2], $Deltas[3], $PullDeltas[4]],
+	[$Deltas[0], $Deltas[1], $Deltas[2], $Deltas[3], $PullDeltas[5]],
+]
+
+$DirNames = [
+	'down',
+	'up',
+	'north',
+	'south',
+	'west',
+	'east',
+]
+
+$Undefined = 0
+$Pushable = 1
+$Break = 2
+$BlockPush = 3
+$Pushed = 4
+$Nonstick = 5
+
+$OppositeDir = [1, 0, 3, 2, 5, 4]
+
+$BehindObserver = {
+	'north': (0, 0, -1),
+	'south': (0, 0, 1),
+	'east': (1, 0, 0),
+	'west': (-1, 0, 0),
+	'up': (0, 1, 0),
+	'down': (0, -1, 0)
+}
+
+$StickyPiston = 1
+$Piston = 2
+
+define @SlimeMarker: @Entity[type=area_effect_cloud,tag=SlimeMarker]
+	create {Tags:["SlimeMarker"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+	
+	array piston_types[6]
+end
+
+define @PushMarker: @Entity[type=area_effect_cloud,tag=PushMarker]
+	create {Tags:["PushMarker","Pushing"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+define @BreakMarker: @Entity[type=area_effect_cloud,tag=BreakMarker]
+	create {Tags:["BreakMarker","Pushing"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+define @MovingBlockPos : @Entity[type=armor_stand, tag=MovingBlockPos]
+end
+
+@NewMovingBlockPos = @Entity[type=armor_stand, tag=NewMovingBlockPos]
+
+define @MovingBlock : @Entity[type=falling_block,tag=MovingBlock]
+	time: Time byte 1
+end
+@NewMovingBlock = @Entity[type=falling_block,tag=NewMovingBlock]
+
+@Pushing = @Entity[type=area_effect_cloud, tag=Pushing]
+
+define @ObserverScheduler : @Entity[type=area_effect_cloud, tag=ObserverScheduler]
+	create {Tags:["ObserverScheduler"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+define [Moving]
+	extending: extending byte 1
+	face: facing int 1
+	source: source byte 1
+	progress: progress float 2
+end
+
+define @Player: @Player
+	array place_slime[16]
+end
+
+reset
+	/gamerule maxCommandChainLength 1000000000
+
+	for $i in $range($len($Colors))
+		$c = $Colors[$i]
+		/scoreboard objectives add place_slime$i minecraft.used:minecraft.$c
+	end
+	
+	unless push_limit > 0
+		push_limit = 12
+	end
+	
+	tell @a 'Loaded {RColored {GSlime {BBlocks{- by SethBling'
+end
+
+clock main	
+	as @PushMarker[move_timer > 0]
+		@s.move_timer--
+		if @s.move_timer == 0
+			at @s if block ~ ~ ~ barrier
+				/setblock ~ ~ ~ air
+			end
+			move_dir = @s.move_dir
+			switch @s.move_dir
+				case $d in $range(6)
+					at @s as @SlimeMarker[distance=..0.1,move_timer==0]
+						move @s ~<$Deltas[$d]>
+					end
+					move @s ~<$Deltas[$d]>
+				end
+			end
+			at @s
+				set_block()
+			end
+			/kill @s
+		end
+	end
+	
+	as @SlimeMarker at @s
+		if @s.move_timer
+			@s.move_timer--
+			if @s.move_timer == 0
+				at @s if block ~ ~ ~ barrier
+					/setblock ~ ~ ~ air
+				end
+				switch @s.move_dir
+					case $d in $range(6)
+						move @s ~<$Deltas[$d]>
+					end
+				end
+				switch @s.color
+					case $i in $range(16)
+						$color = $Colors[$i]
+						at @s
+							/setblock ~ ~ ~ $color
+						end
+					end
+				end
+			end
+		else
+			for $d in $range(6)
+				# Regular 3 tick pull
+				at ~<$PullDeltas[$d]> at ~<$PullDeltas[$d]>
+					if block ~ ~ ~ sticky_piston
+						@s.piston_types[$d] = $StickyPiston
+					end
+					if block ~ ~ ~ piston
+						@s.piston_types[$d] = $Piston
+					end
+					if [Moving].face == $d and [Moving].extending == 0 and [Moving].source == 1 and [Moving].progress == 0 and @s.piston_types[$d] == $StickyPiston
+						at @s
+							$dx, $dy, $dz = $PullDeltas[$d]
+							
+							$op = $OppositeDir[$d]
+							@s.move_dir = $op
+							@s.move_timer = 3
+							get_pushable_list{$op}(False)
+						end
+					end
+				end
+				
+				# 0-tick push then pull
+				at ~<$PullDeltas[$d]>
+					if [Moving].face == $d and [Moving].extending == 0 and [Moving].source == 1 and [Moving].progress == 0
+						/say 0 tick
+					
+						$op = $OppositeDir[$d]
+						at @s
+							get_pushable_list{$d}(True)
+						end
+						at @s ~<$Deltas[$d]>
+							/setblock ~ ~ ~ barrier
+							/tp @s ~ ~ ~
+							@s.move_dir = $op
+							@s.move_timer = 3
+							get_pushable_list{$op}(False)
+						end
+					end
+				end
+				
+				# Regular 3 tick push
+				at ~<$Deltas[$d]>
+					if [Moving].face == $d and [Moving].extending and not [Moving].source and [Moving].progress == 0
+						@s.move_dir = $d
+						@s.move_timer = 3
+						at @s
+							get_pushable_list{$d}(False)
+						end
+					end
+				end
+			end
+			
+			at @s unless block ~ ~ ~ sticky unless block ~ ~ ~ barrier if @s.move_timer == 0
+				/kill @s
+			end
+		end
+	end
+	
+	@MovingBlockPos.move_timer--
+	@MovingBlock.move_timer--
+	as @MovingBlockPos
+		if @s.move_timer == 1
+			switch @s.d
+				case $d in $range(6)
+					$dx, $dy, $dz = $Deltas[$d]
+					$dx = $dx / 2.0
+					$dy = $dy / 2.0
+					$dz = $dz / 2.0
+					move @s ~$dx ~$dy ~$dz
+				end
+			end
+		end
+		if @s.move_timer <= 0
+			/kill @s
+		end
+	end
+	as @MovingBlock
+		@s.time = 1
+		if @s.move_timer < 0
+			/kill @s
+		end
+	end
+		
+	as @Player at @s eyes ^ ^ ^
+		for $i in $range(16)
+			$color = $Colors[$i]
+			if @s.place_slime[$i]
+				steps = 0
+				while steps < 60 at feet ^ ^ ^0.1
+					if block ~ ~ ~ sticky align xyz at ~0.5 ~0.5 ~0.5 unless @SlimeMarker[distance=..0.1]
+						if block ~ ~ ~ $color
+							as create @SlimeMarker
+								@s.color = $i
+								@s.move_timer = 0
+							end
+							steps = 1000000
+						end
+					end
+					steps++
+				end
+				
+				@s.place_slime[$i] = False
+			end
+		end
+	end
+	
+	as @ObserverScheduler at @s
+		for $d in ['north', 'south', 'east', 'west', 'up', 'down']
+			if block ~ ~ ~ observer[facing=$d,powered=false]
+				at ~<$BehindObserver[$d]>
+					get_block()
+					/setblock ~ ~ ~ barrier
+					set_block()
+				end
+			end
+		end
+		/kill @s
+	end
+end
+
+# Enacts a recursive push/pull
+function get_pushable_list{$d}(instant)
+	push_count = 0
+	
+	at @s
+		recursive_pushed{$d}()
+	end
+	
+	if push_count <= push_limit
+		at @BreakMarker
+			/setblock ~ ~ ~ air destroy
+		end
+		/kill @BreakMarker
+		/kill @PushMarker[not act]
+		@PushMarker.move_timer += 0
+		$dx, $dy, $dz = $Deltas[$d]
+		if instant
+			while @PushMarker[move_timer==0]
+				as @PushMarker[move_timer==0] at @s
+					at ~<$Deltas[$d]> if block ~ ~ ~ air
+					else
+						/clone ~ ~ ~ ~ ~ ~ ~$dx ~$dy ~$dz
+						/setblock ~ ~ ~ air
+						/kill @s
+					end
+				end
+			end
+		else
+			as @PushMarker[move_timer==0] at @s
+				get_block()
+				@s.move_dir = $d
+			end
+			as @PushMarker[move_timer==0] at @s
+				@s.move_timer = 3
+				/setblock ~ ~ ~ barrier
+				/setblock ~$dx ~$dy ~$dz barrier
+				
+				block_id = @s.block_id
+				$mdx = $dx / 2.0
+				$mdy = $dy / 2.0
+				$mdz = $dz / 2.0
+				at ~$mdx ~$mdy ~$mdz
+					create_moving_block()
+				end
+				as @NewMovingBlockPos[limit=1]
+					@s.d = $d
+					@s.move_timer = 2
+					/tag @s remove NewMovingBlockPos
+				end
+				as @NewMovingBlock[limit=1]
+					@s.move_timer = 2
+					/tag @s remove NewMovingBlock
+				end
+			end
+		end
+	else
+		@PushMarker.move_timer += 0
+		/kill @PushMarker[move_timer == 0]
+		/kill @BreakMarker
+	end
+end
+
+# Creates a moving_block for @s.block_id
+function create_moving_block()
+	switch block block_id
+		default
+			/summon armor_stand ~ ~-0.5 ~ {Tags:["MovingBlockPos", "NewMovingBlockPos"], Marker:1b, Invisible:1b, Invulnerable:1b, NoGravity:1b, Passengers:[{id:"falling_block", Time:1b, NoGravity:1b, BlockState:{$falling_block_nbt}, Tags:["MovingBlock","NewMovingBlock"]}]}
+		end
+	end
+end
+
+# Gets the current block id and stores it in @s.block_id
+function get_block()
+	switch block
+		default
+			@s.block_id = $block_id
+		end
+	end
+end
+
+# Runs /setblock for @s.block_id, with special cases for observers to update them
+function set_block()
+	switch block @s.block_id
+		case observer[powered=false]
+			/setblock ~ ~ ~ $block_state
+			create @ObserverScheduler
+		end
+		default
+			/setblock ~ ~ ~ $block_state
+		end
+	end
+end
+
+function recursive_pushed{$d}()
+	get_pushable{$d}()
+	if pushable == $Pushed
+		push_count++
+		as create @PushMarker
+			@s.act = False
+			at ~<$Deltas[$d]>
+				recursive_pushed{$d}()
+			end
+			
+			for $i in $range(16)
+				$color = $Colors[$i]
+				$dx, $dy, $dz = $Deltas[$d]
+				
+				# Check one block over for a piston tile entity with a sticky color
+				sticky_color = -1
+				/execute if data block ~$dx ~$dy ~$dz {blockState:{Name:"minecraft:$color"}} run scoreboard players set Global sticky_color $i
+				if sticky_color >= 0
+					recursive_push{$d, True}()
+				end
+			end
+		end
+	end
+end
+
+function recursive_push{$d, $force_sticky}()
+	at @s
+		if $force_sticky
+		else
+			at ~<$Deltas[$d]> unless @Pushing[distance=..0.1,limit=1]
+				get_pushable{$d}()
+				if pushable == $BlockPush
+					push_count = 1000
+					<x, y, z> = here / scale
+					if debug_blocked
+						tell @a 'Blocked at (x) (y) (z)'
+					end
+				else if pushable == $Break
+					create @BreakMarker
+				else
+					recursive_create_push{$d}()
+				end
+			end
+		end
+		if $force_sticky
+			sticky = True
+		else
+			sticky = False
+			if block ~ ~ ~ sticky
+				sticky = True
+			end
+		end
+			
+		if sticky
+			for $side_delta in $SideDeltas[$d]
+				at ~<$side_delta> unless @Pushing[distance=..0.1,limit=1]
+					get_pushable{$d}()
+					
+					if $force_sticky
+						check_force_sticky()
+					else					
+						check_sticky()
+					end
+					
+					recursive_create_push{$d}()
+				end
+			end
+		end
+	end
+end
+
+function check_force_sticky()
+	switch sticky_color
+		case $i in $range(16)
+			$color = $Colors[$i]
+			if block ~ ~ ~ sticky unless block ~ ~ ~ $color
+				pushable = $Nonstick
+			end
+		end
+	end
+end
+
+function check_sticky()
+	for $color in $Colors
+		if block ~ ~ ~ sticky if block ~ ~ ~ $color at @s unless block ~ ~ ~ $color
+			pushable = $Nonstick
+		end
+	end
+end
+
+function recursive_create_push{$d}()
+	recursive = False
+	if pushable == $Pushable
+		recursive = True
+		act = True
+	end
+	if pushable == $Pushed
+		recursive = True
+		act = False
+	end
+	if recursive
+		push_count++
+		if push_count <= push_limit
+			as create @PushMarker
+				@s.act = act
+				recursive_push{$d, False}()
+			end
+		end
+	end
+end
+
+function get_pushable{$direction}()
+	pushable = $Undefined
+	
+	$dx,$dy,$dz = $Deltas[$direction]
+	
+	/execute if data block ~$dx ~$dy ~$dz {id:"minecraft:piston", source:0b, progress:0.0f, extending:1b, facing: $direction} run scoreboard players set Global pushable $Pushed
+	$op = $OppositeDir[$direction]
+	/execute if data block ~$dx ~$dy ~$dz {id:"minecraft:piston", source:0b, progress:0.0f, extending:0b, facing: $op} run scoreboard players set Global pushable $Pushed
+	
+	get_pushable_here()
+end
+
+function get_pushable_here()
+	if pushable == $Undefined
+		/execute if data block ~ ~ ~ {} run scoreboard players set Global pushable $BlockPush
+	end
+	
+	if pushable == $Undefined
+		if block ~ ~ ~ piston[extended=false]
+			pushable = $Pushable
+		else if block ~ ~ ~ piston[extended=true]
+			pushable = $BlockPush
+		else if block ~ ~ ~ sticky_piston[extended=false]
+			pushable = $Pushable
+		else if block ~ ~ ~ sticky_piston[extended=true]
+			pushable = $BlockPush
+		else if block ~ ~ ~ piston_push
+			pushable = $Pushable
+		else if block ~ ~ ~ piston_block
+			pushable = $BlockPush
+		else
+			pushable = $Break
+		end
+	end
+end

@@ -1,1 +1,0 @@
-execute as @e[type=minecraft:armor_stand,tag=reddition.blocks.block_place.block_breaker] at @s unless block ~ ~ ~ minecraft:dropper run kill @s

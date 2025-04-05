@@ -1,0 +1,25 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft 1.14\saves\SethBling's World 1.14"
+desc "Test for shaped crafting recipes"
+
+import common
+
+define item_tag grasslike
+	podzol
+	grass_block
+	mycelium
+end
+
+shaped recipe
+	'GGG'
+	'GBG'
+	'GGG'
+	keys
+		G = tag:grasslike
+		B = item:slime_ball
+	end
+	result: 7 cocoa_beans
+end
+
+reset
+
+end

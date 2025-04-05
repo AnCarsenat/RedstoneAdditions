@@ -1,0 +1,6 @@
+*.pyc
+*.pyo
+*.out
+unittest/htmlcov/*
+*.coverage
+parsetab.py

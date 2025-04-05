@@ -1,0 +1,332 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft 1.14\saves\SethBling's World 1.14"
+desc "Noclip for creative mode"
+
+import common
+import math
+
+define block_tag none
+	air
+	cave_air
+	grass
+	fern
+	dead_bush
+	seagrass
+	tall_seagrass
+	piston_head
+	tall_grass
+	oak_sapling
+	spruce_sapling
+	birch_sapling
+	jungle_sapling
+	acacia_sapling
+	dark_oak_sapling
+	glass
+	powered_rail
+	detector_rail
+	moving_piston
+	dandelion
+	poppy
+	blue_orchid
+	allium
+	azure_bluet
+	red_tulip
+	orange_tulip
+	white_tulip
+	pink_tulip
+	oxeye_daisy
+	brown_mushroom
+	red_mushroom
+	torch
+	wall_torch
+	redstone_wire
+	wheat
+	ladder
+	rail
+	lever
+	redstone_torch
+	redstone_wall_torch
+	stone_button
+	sugar_cane
+	white_stained_glass
+	orange_stained_glass
+	magenta_stained_glass
+	light_blue_stained_glass
+	yellow_stained_glass
+	lime_stained_glass
+	pink_stained_glass
+	gray_stained_glass
+	light_gray_stained_glass
+	cyan_stained_glass
+	purple_stained_glass
+	blue_stained_glass
+	brown_stained_glass
+	green_stained_glass
+	red_stained_glass
+	black_stained_glass
+	glass_pane
+	attached_pumpkin_stem
+	attached_melon_stem
+	pumpkin_stem
+	melon_stem
+	nether_wart
+	cocoa
+	tripwire_hook
+	tripwire
+	beacon
+	flower_pot
+	potted_oak_sapling
+	potted_spruce_sapling
+	potted_birch_sapling
+	potted_jungle_sapling
+	potted_acacia_sapling
+	potted_dark_oak_sapling
+	potted_fern
+	potted_dandelion
+	potted_poppy
+	potted_blue_orchid
+	potted_allium
+	potted_azure_bluet
+	potted_red_tulip
+	potted_orange_tulip
+	potted_white_tulip
+	potted_pink_tulip
+	potted_oxeye_daisy
+	potted_red_mushroom
+	potted_brown_mushroom
+	potted_dead_bush
+	potted_cactus
+	carrots
+	potatoes
+	oak_button
+	spruce_button
+	birch_button
+	jungle_button
+	acacia_button
+	dark_oak_button
+	skeleton_wall_skull
+	skeleton_skull
+	wither_skeleton_wall_skull
+	wither_skeleton_skull
+	zombie_wall_head
+	zombie_head
+	player_wall_head
+	player_head
+	creeper_wall_head
+	creeper_head
+	dragon_wall_head
+	dragon_head
+	activator_rail
+	white_stained_glass_pane
+	orange_stained_glass_pane
+	magenta_stained_glass_pane
+	light_blue_stained_glass_pane
+	yellow_stained_glass_pane
+	lime_stained_glass_pane
+	pink_stained_glass_pane
+	gray_stained_glass_pane
+	light_gray_stained_glass_pane
+	cyan_stained_glass_pane
+	purple_stained_glass_pane
+	blue_stained_glass_pane
+	brown_stained_glass_pane
+	green_stained_glass_pane
+	red_stained_glass_pane
+	black_stained_glass_pane
+	barrier
+	sunflower
+	lilac
+	rose_bush
+	peony
+	tall_grass
+	large_fern
+	end_rod
+	chorus_plant
+	chorus_flower
+	beetroots
+	structure_void
+	kelp
+	kelp_plant
+	turtle_egg
+	dead_tube_coral
+	dead_brain_coral
+	dead_bubble_coral
+	dead_fire_coral
+	dead_horn_coral
+	tube_coral
+	brain_coral
+	bubble_coral
+	fire_coral
+	horn_coral
+	dead_tube_coral_wall_fan
+	dead_brain_coral_wall_fan
+	dead_bubble_coral_wall_fan
+	dead_fire_coral_wall_fan
+	dead_horn_coral_wall_fan
+	tube_coral_wall_fan
+	brain_coral_wall_fan
+	bubble_coral_wall_fan
+	fire_coral_wall_fan
+	horn_coral_wall_fan
+	dead_tube_coral_fan
+	dead_brain_coral_fan
+	dead_bubble_coral_fan
+	dead_fire_coral_fan
+	dead_horn_coral_fan
+	tube_coral_fan
+	brain_coral_fan
+	bubble_coral_fan
+	fire_coral_fan
+	horn_coral_fan
+	sea_pickle
+	conduit
+	void_air
+	water
+	lava
+end
+
+define @Player = @Player
+	marker: @Marker
+end
+
+reset
+	/scoreboard objectives add FlightSettings trigger
+end
+
+clock main
+	@Player.check = False
+	@Player[gamemode=creative].check = True
+	@Player[gamemode=spectator].check = True
+
+	for @player in @Player[check]
+		unless @s.FlightSettings == 0
+			switch @s.FlightSettings
+				case 2
+					@s.noclip = False
+				end
+				case 3
+					@s.noclip = True
+				end
+				case 4
+					@s.vflight = False
+				end
+				case 5
+					@s.vflight = True
+				end
+				case 6
+					@s.nomomentum = False
+				end
+				case 7
+					@s.nomomentum = True
+				end
+			end
+
+			tell @s '{C == Creative Flight Settings by SethBling =='
+			if @s.noclip
+				tell @s '{GNoclip Enabled. {R[\[Disable\]](/trigger FlightSettings set 2)'
+			else
+				tell @s '{RNoclip Disabled. {G[\[Enable\]](/trigger FlightSettings set 3)'
+			end
+			if @s.vflight
+				tell @s '{GVertical Flying Enabled. {R[\[Disable\]](/trigger FlightSettings set 4)'
+			else
+				tell @s '{RVertical Flying Disabled. {G[\[Enable\]](/trigger FlightSettings set 5)'
+			end
+			if @s.nomomentum
+				tell @s '{GNo Momentum Enabled. {R[\[Disable\]](/trigger FlightSettings set 6)'
+			else
+				tell @s '{RNo Momentum Disabled. {G[\[Enable\]](/trigger FlightSettings set 7)'
+			end
+			tell @s 'Type {w[/trigger FlightSettings](//trigger FlightSettings){- at any time to bring up this menu.'
+		
+			display_flight_settings()
+			@s.FlightSettings = 0
+			/scoreboard players enable @s FlightSettings
+		end
+	
+		<pos1> = @s.<pos>
+		as @s.marker
+			<pos2> = @s.<pos>
+		else
+			at @s
+				@s.marker = create @Marker
+			end
+		end
+			
+		if <pos1> == <pos2>
+			@s.stop_count++
+		else
+			<dx, dy, dz> = <pos1> - <pos2>
+			speedsq = dx^2 + dy^2 + dz^2
+			
+			/gamerule sendCommandFeedback false
+			/gamemode spectator @s[gamemode=creative, noclip]
+			/gamerule sendCommandFeedback true
+	
+			oldspeedsq = @s.speedsq * 9 / 10
+			if speedsq < oldspeedsq
+				@s.stop_count++
+			else
+				@s[stop_count > 6].stop_count = 0
+				@s[stop_count > 0].stop_count--
+			end
+			
+			@s.speedsq = speedsq
+			
+			if @s.vflight			
+				unless @Position do create @Position
+				at @s
+					/tp @Position ~ ~ ~ 0 ~
+				end
+				<start> = @Position.<pos>
+				move @Position ^ ^ ^1
+				<fx, fy, fz> = @Position.<pos> - <start>
+				slope = fy * 1000 / fz
+				
+				at @s
+					/tp @Position ~ ~ ~ ~ 0
+				end
+				<start> = @Position.<pos>
+				move @Position ^ ^ ^1
+				<fx, fy, fz> = @Position.<pos> - <start>
+				
+				hmag = dx^2+dz^2
+				hspeed = sqrt(hmag)
+				nx = dx * 1000 / hspeed
+				nz = dz * 1000 / hspeed
+				
+				mult = (nx*fx + nz*fz) / 1000
+				
+				vmove = hspeed * slope / 1000 * mult / 1000
+				
+				for $exp in [512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
+					$scaled = $float($exp) / 1000
+					$nexp = -$exp
+					if vmove > $exp
+						move @s ~ ~$scaled ~
+						vmove -= $exp
+					end
+					if vmove < $nexp
+						move @s ~ ~-$scaled ~
+						vmove += $exp
+					end
+				end
+			end
+			
+			as @s.marker
+				@s.<pos> = @player.<pos>
+			end
+		end
+		if @s.stop_count >= 2 at @s if block ~ ~ ~ none and block ~ ~1 ~ none
+			/gamerule sendCommandFeedback false
+			/gamemode creative @s[gamemode=spectator, noclip]
+			/gamerule sendCommandFeedback true
+		end
+		if @s.stop_count == 6
+			@s.speedsq = 0
+			at @s[nomomentum]
+				/tp @s 0 0 0
+				/tp @s ~ ~ ~
+			end
+		end
+	end
+end

@@ -1,0 +1,80 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft\saves\SethBling's World 1.13"
+desc "Grows realistic trees through bifurcation."
+
+import common
+
+define @Branch = @Entity[type=area_effect_cloud, tag=Branch]
+	create {Tags:["Branch"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+define @Position = @Entity[type=area_effect_cloud,tag=Position,limit=1]
+	create {Tags:["Position"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+reset
+	/kill @Branch
+	
+	tell @a "{G[\[Create Tree\]](call create_tree)"
+end
+
+function create_tree()
+	at @s
+		as create @Branch
+			@s.root = True
+			@s.<growth> = <0, 1000, 0>
+			@s.radius = 200
+			@s.leaf = True
+		end
+	end
+end
+
+clock main
+	growth_clock++
+	if growth_clock >= 20
+		growth_clock = 0
+		
+		as @Branch
+			@s.radius += 200
+		end
+		
+		as @Branch[leaf]
+			@s.leaf = False
+			<growth> = (@s.<growth> + <0, 100, 0>) * 9 / 10
+			at @s unless @Position do create @Position
+			@Position.<pos> = @s.<pos> + @s.<growth>
+			at @Position
+				for $i in [0, 1]
+					as create @Branch
+						@s.<growth> = <growth> + <rand(-500, 500), rand(-500, 500), rand(-500, 500)>
+						@s.leaf = True
+						@s.radius = 200
+					end
+				end
+			end
+		end
+		
+		as @Branch at @s
+			unless @Position do create @Position
+			for dx = -@s.radius to @s.radius by 200
+				for dz = -@s.radius to @s.radius by 200
+					dsq = dx*dx + dz*dz
+					radsq = @s.radius*@s.radius
+					if dsq <= radsq
+						@Position.<pos> = @s.<pos> + <dx, 0, dz>
+						at @Position
+							/setblock ~ ~ ~ oak_wood
+						end
+					end
+				end
+			end
+
+			if @s.leaf
+				@Position.<pos> = @s.<pos> + @s.<growth>
+				at @Position
+					/setblock ~ ~ ~ oak_leaves
+				end
+			end
+		end
+		
+	end
+end

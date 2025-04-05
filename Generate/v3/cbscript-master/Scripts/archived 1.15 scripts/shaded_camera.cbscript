@@ -1,0 +1,272 @@
+dir: C:\Users\Seth\AppData\Roaming\.minecraft\saves\Texture Camera
+desc: A camera with shading
+scale: 1000
+
+import common
+import map_blocks
+
+define @Scan = @Entity[type=area_effect_cloud,tag=Scan,limit=1]
+	create: {Tags:["Scan"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+define @Position = @Entity[type=area_effect_cloud,tag=Position,limit=1]
+	create: {Tags:["Position"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+define @Texture = @Entity[type=area_effect_cloud,tag=Texture,limit=1]
+	create: {Tags:["Texture"], Duration:-1,Age:-2147483648,WaitTime:-2147483648}
+end
+
+$Pixels: 128
+$Radius: 10
+$Diameter: 2 * Radius
+$PixelMove: float(Diameter) / Pixels
+
+$map_x: -64
+$map_z: -64
+
+reset
+	/gamerule maxCommandChainLength 1000000000
+	/gamerule randomTickSpeed 0
+	
+    /bossbar add progress "Progress"
+    /bossbar set progress max 128
+
+	unless @Scan do create @Scan
+	unless @Position do create @Position
+	unless @Texture do create @Texture
+
+	tell @a: {Y[\[Take Picture\]](/function shaded_camera:take_picture) [\[Setup\]](/function shaded_camera:setup)
+end
+
+function fill_ceiling()
+	tell @a: Filling ceiling...
+	$xmin: map_x-16
+	$xmax: map_x+128+16
+	$zmin: map_z-16
+	$zmax: map_z+128+16
+	/fill $xmin 255 $zmin $xmax 255 $zmax redstone_lamp
+	tell @a: Ceiling done.
+end
+
+function setup()
+	fill_ceiling()
+	
+	/bossbar set progress players @s
+    for $x in: range(map_x, map_x+128, 8)
+		$dx: x - map_x
+		/bossbar set progress value $dx
+		for $z in: range(map_z, map_z+128, 8)
+			$xp: x+7
+			$zp: z+7
+			/fill $x 0 $z $xp 254 $zp air
+		end
+	end
+	/bossbar set progress players
+end
+
+function take_picture()
+	/bossbar set progress players @s
+              
+	at @s
+		/tp @Scan ~ ~1.8 ~ ~ ~
+	end
+	
+	move @Scan ^$Radius ^$Radius ^10
+	$x_start: map_x-1
+	at $x_start 128 $map_z
+		col = 0
+		while col < 128 at ~1 128 ~
+			# Recursively capture column pixels
+			row = 0
+			/execute store result bossbar progress value run scoreboard players get Global col
+			take_picture_col()
+			
+			col++
+			move @Scan ^-$PixelMove ^$Diameter ^
+			<x, y, z> = @Scan.<pos>
+		end
+	end
+	/bossbar set progress players
+end
+
+macro $take_picture_col_recurse($dy)
+	at ~ ~$dy ~
+		# Copy the block into the map area
+		/clone 0 1 0 0 1 0 ~ ~ ~
+		/fill ~ ~1 ~ ~ 254 ~ air
+		
+		# Move on to the next row
+		row++
+		move @Scan ^ ^-$PixelMove ^
+		<x, y, z> = @Scan.<pos>
+		if row < 128 at ~ ~ ~1
+			take_picture_col()
+		end
+	end
+end
+
+function take_picture_col()
+	# Perform recursive ray trace
+	step = 0
+	at @s ~ ~1.8 ~ facing @Scan
+		ray_trace_step()
+	end
+	
+	handled = False
+	if face_x
+		$take_picture_col_recurse(-1)
+		handled = True
+	end
+	
+	if face_y and not handled
+		$take_picture_col_recurse(1)
+		handled = True
+	end
+	
+	if face_z and not handled
+		$take_picture_col_recurse(0)
+		handled = True
+	end
+end
+
+function ray_trace_step()
+	$Step: 0.2
+	handled = False
+	if block ~ ~ ~ none and step < 800
+		step++
+		at ^ ^ ^$Step do ray_trace_step()
+		handled = True
+	end
+	
+	if not handled
+		at ^ ^ ^-$Step
+			fine_step = 0
+			ray_trace_fine_step()
+		end
+	end
+end
+
+macro $get_texture($block_type, $y)
+	if block ~ ~ ~ $block_type
+		$set_texture($y)
+	end
+end
+
+macro $set_texture($y)
+	$scaled_y: y*1000
+	@Texture.<pos> = <22000 + u * 16, $scaled_y, 100000 + (999-v) * 16>
+	at @Texture
+		/clone ~ ~ ~ ~ ~ ~ 0 1 0
+	end
+end
+
+function ray_trace_fine_step()
+	$FineStep: 0.02
+	
+	handled = False
+	if block ~ ~ ~ none and fine_step < 11
+		fine_step++
+		at ^ ^ ^$FineStep do ray_trace_fine_step()
+		handled = True
+	end
+	
+	if not handled
+		$create_map_block_at(0, 1, 0)
+		
+		# Compute which face was crossed first		
+		as @Position
+			/tp @s ~ ~ ~ ~ ~
+			<x2, y2, z2> = @s.<pos>
+			move @s ^ ^ ^-$FineStep
+			<x1, y1, z1> = @s.<pos>
+		end
+		<bx1, by1, bz1> = <x1, y1, z1> % 1000
+		<dx, dy, dz> = <x2, y2, z2> - <x1, y1, z1>
+		<bx2, by2, bz2> = <bx1, by1, bz1> + <dx, dy, dz>
+		
+		if bx2 > 1000
+			px = (1000-bx1) * 100 / dx
+		end
+		if bx2 < 0
+			px = bx1 * 100 / -dx
+		end
+		if bx2 >= 0 and bx2 < 1000
+			px = 0
+		end
+		
+		if by2 > 1000
+			py = (1000-by1) * 100 / dy
+			top_face = False
+			bottom_face = True
+		end
+		if by2 < 0
+			py = by1 * 100 / -dy
+			top_face = True
+			bottom_face = False
+		end
+		if by2 >= 0 and by2 < 1000
+			py = 0
+		end
+		
+		if bz2 > 1000
+			pz = (1000-bz1) * 100 / dz
+		end
+		if bz2 < 0
+			pz = bz1 * 100 / -dz
+		end
+		if bz2 >= 0 and bz2 < 1000
+			pz = 0
+		end
+		
+		if face_x and block ~ ~ ~ grass_block
+			$set_texture(70)
+		end
+		if face_z and block ~ ~ ~ grass_block
+			$set_texture(70)
+		end
+		if face_y and bottom_face and block ~ ~ ~ grass_block
+			$set_texture(70)
+		end
+		
+		if px
+			face_x = True
+			face_y = False
+			face_z = False
+			u = by1
+			v = bz1
+		end
+		
+		if py
+			face_x = False
+			face_y = True
+			face_z = False
+			u = bz1
+			v = bx1
+		end
+		
+		if pz
+			face_x = False
+			face_y = False
+			face_z = True
+			u = by1
+			v = bx1
+		end
+		
+		if fine_step >= 11
+			face_x = False
+			face_y = True
+			face_z = False
+			/setblock 0 1 0 light_blue_wool
+		end
+		
+		$get_texture("oak_planks", 63)
+		$get_texture("bricks", 64)
+		$get_texture("spruce_leaves", 66)
+		$get_texture("spruce_log", 67)
+		if face_y and top_face
+			$get_texture("grass_block", 68)
+		end
+		$get_texture("dirt", 70)
+	end
+end

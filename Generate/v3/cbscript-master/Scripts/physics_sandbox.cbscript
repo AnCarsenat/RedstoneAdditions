@@ -1,0 +1,169 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft 1.20\saves\Physics - One Wall"
+desc "Rigid Body Physics Sandbox"
+scale 1000
+
+import common
+import math
+import colliders
+
+@nearest_player = @Player[sort=nearest,limit=1]
+@Interaction = @Entity[type=interaction]
+
+$Precision = 1000
+$Half = 500
+$Billion = 1000000000
+reset
+    /scoreboard objectives add absorbed minecraft.custom:minecraft.damage_dealt_absorbed
+
+    initialize_transforms()
+
+    at @nearest_player
+        /kill @Position
+        create @Position ~ ~ ~
+    end
+
+    /kill @Interaction
+
+    CubeSize = 1500
+    CubeInvMass = 800
+    CubeInvRotInt = 400
+    
+    tell_options()
+end
+
+clock tick
+    define name collider = "collider_$(collider)"
+    
+    /kill @Position
+    create @Position
+    
+    unless @Interaction
+        at @nearest_player
+            /summon minecraft:interaction ~ ~-5 ~ {width:10, height:10}
+        end
+    end
+    
+    left_clicked = False
+    right_clicked = False
+    
+    as @Interaction
+        on attacker
+            left_clicked = True
+        end
+        on target
+            right_clicked = True
+        end
+        /data remove entity @s attack
+        /data remove entity @s interaction
+
+        at @nearest_player
+            /tp @s ~ ~-5 ~
+        end
+    end
+
+    # Get facing data
+    as @nearest_player at @s eyes
+        /tp @Position ^ ^ ^
+        world_eye_x = @Position.x
+        world_eye_y = @Position.y
+        world_eye_z = @Position.z
+        
+        /tp @Position ^ ^ ^1
+        world_eye_dx = @Position.x - world_eye_x
+        world_eye_dy = @Position.y - world_eye_y
+        world_eye_dz = @Position.z - world_eye_z
+    end
+
+    if left_clicked
+        min_col_t = $Billion
+
+        # Find the nearest collider in the direction of the cursor ray
+        for collider = 1 to max_collider
+            with
+                $(collider) = collider
+            do
+                if collider_ray_intersection(world_eye_x, world_eye_y, world_eye_z, world_eye_dx, world_eye_dy, world_eye_dz) with macros
+                    if t < min_col_t
+                        min_col_t = t
+                        min_x = collision_x
+                        min_y = collision_y
+                        min_z = collision_z
+                        min_col = collider
+                    end
+                end
+            end
+        end
+        
+        if min_col_t < $Billion
+            # There was a ray intersection
+            $PunchPower = 1000
+            with
+                $(collider) = min_col
+            collider_apply_impulse(min_x, min_y, min_z, world_eye_dx * $PunchPower / scale, world_eye_dy * $PunchPower / scale, world_eye_dz * $PunchPower / scale)
+            
+            save_state()
+            
+            @Position.<pos> = <min_x, min_y, min_z>
+            at @Position
+                /particle minecraft:crit ~ ~ ~ 0 0 0 0 1 force
+            end
+        end
+    end
+    
+    if right_clicked
+        at @nearest_player ^ ^1.6 ^3
+            /tp @Position ~ ~ ~
+            x = @Position.x
+            y = @Position.y
+            z = @Position.z
+        end
+
+        if mode == $Sphere
+            with
+                $(block_name) = "target"
+            add_sphere(x, y, z)
+        else
+            with
+                $(block_name) = "target"
+            add_collider(x, y, z)
+        end
+        
+        tell_options()
+    end
+    
+    colliders_physics_tick()
+    colliders_get_new_collisions()
+    colliders_resolve_collisions()
+    colliders_finalize_tick()
+    
+    if Particles
+        for collision = 1 to max_collision
+            with
+                $(collision) = collision
+            do
+                define name collision = "collision_$(collision)"
+                
+                if collision.id
+                    @Position.<pos> = <collision.x, collision.y, collision.z>
+                    at @Position
+                        /particle minecraft:bubble_pop ~ ~ ~
+                    end
+                end
+            end
+        end
+    end
+end
+
+function tell_options()
+    tell @a "Physics: {C[\[Load State\]](/function $namespace:load_state) {R[\[Destroy All Colliders\]](/function $namespace:destroy_colliders) {Y[\[Cubes\]](/function $namespace:cube_mode) {y[\[Spheres\]](/function $namespace:sphere_mode)"
+end
+
+function cube_mode()
+    mode = $Cube
+    tell @a "New colliders will be {Ycubes{-."
+end
+
+function sphere_mode()
+    mode = $Sphere
+    tell @a "New colliders will be {yspheres{-."
+end

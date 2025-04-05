@@ -1,1 +1,0 @@
-give @p minecraft:item_frame{'display': {'Name': '{"text":"Block Breaker","italic":false}', 'Lore': ['{"text":"A block that breaks blocks in front of it","italic":false}']}, 'CustomModelData': 1, 'Tags': ['reddition.blocks.block_breaker']}

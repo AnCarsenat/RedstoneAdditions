@@ -1,0 +1,1888 @@
+dir "C:\Users\Seth\AppData\Roaming\.minecraft 1.20\saves\Blocket League"
+desc "Blocket League game"
+scale 1000
+
+import common
+import math
+import colliders
+
+define @PlayerInteraction = @Entity[type=interaction, tag=PlayerInteraction]
+    create {Tags:["PlayerInteraction"], width:6, height:6, teleport_duration:1}
+end
+
+@Playing = @Player[gamemode=adventure]
+@PlayerBlock = @PhysicsBlock[tag=PlayerBlock]
+@BallBlock = @PhysicsBlock[tag=BallBlock,limit=1]
+define @RopeSegment = @Entity[type=block_display,tag=RopeSegment]
+    create {block_state: {Name: "minecraft:blue_concrete", count: 0b}, teleport_duration: 1, interpolation_duration: 1, transformation:{left_rotation: [0f, 0f, 0f, 1f], translation: [0f, 0f, 0f], right_rotation: [0f, 0f, 0f, 1f], scale:[0.05f, 0.05f, 0.05f]}, Tags:["RopeSegment"]}
+    
+    tele_dur: teleport_duration int 1
+    interp_dur = interpolation_duration int 1
+end
+
+define @PlayerHead = @Entity[type=item_display,tag=PlayerHead]
+    create {Tags:["PlayerHead"], item:{id:"minecraft:player_head", Count:1b, tag:{}}, teleport_duration:1, interpolation_duration: 1}
+end
+
+define @Glass = @Entity[type=block_display,tag=Glass]
+    create {Tags:["Glass"], block_state:{Name:"minecraft:black_stained_glass"}, transformation:{left_rotation: [0f, 0f, 0f, 1f], translation: [-20f, -30f, -10f], right_rotation: [0f, 0f, 0f, 1f], scale:[40f, 60f, 20f]}, view_range:10f}
+    
+    <scale> : transformation.scale float 1000
+    scale_x : transformation.scale[0] float 1000
+    scale_y : transformation.scale[1] float 1000
+    scale_z : transformation.scale[2] float 1000
+
+    <translation> : transformation.translation float 1000
+    translation_x : transformation.translation[0] float 1000
+    translation_y : transformation.translation[1] float 1000
+    translation_z : transformation.translation[2] float 1000
+end
+
+define @NameTag = @Entity[type=block_display,tag=NameTag]
+    create {Tags:["NameTag"],CustomNameVisible:1b,block_state:{Name:"barrier",Count:1}, teleport_duration:1}
+end
+
+item_modifier set_head {
+    "function": "minecraft:fill_player_head",
+    "entity": "this"
+}
+
+$Precision = 1000
+$Half = 500
+$Billion = 1000000000
+
+$Red = 1
+$Blue = 2
+
+$Lobby = 1
+$StartingGame = 2
+$Tipoff = 3
+$Playing = 4
+$Scored = 5
+
+$BallSize = 4000
+$PlayerSize = 1200
+$DemoVelocity = 1000
+
+$Triggers = [
+    "join_red_team",
+    "join_blue_team",
+    "spectate",
+    "start_game",
+    "stop_game",
+    "settings",
+    "setting_sphere",
+    "tell_options",
+]
+
+reset
+    /gamerule playersNetherPortalCreativeDelay 1000000
+    /gamerule playersNetherPortalDefaultDelay 1000000
+    
+    /team add red "Red"
+    /team modify red color red
+    /team modify red seeFriendlyInvisibles false
+    /team add blue "Blue"
+    /team modify blue color blue
+    /team modify blue seeFriendlyInvisibles false
+    
+    for $trigger in $Triggers
+        /scoreboard objectives add $trigger trigger
+    end
+    
+    /scoreboard objectives add leave_game minecraft.custom:minecraft.leave_game
+    
+    /scoreboard objectives add score dummy "Score"
+    
+    as @Player
+        tell_options()
+    end
+    
+    /kill @RopeSegment
+    if DisplayAcc
+        create @RopeSegment
+    end
+end
+
+function tell_options()
+    tell @s "{YBlocket League {yv1.2{- by {CSethBling"
+    tell @s "{R{U[\[Go Red\]](/trigger join_red_team set 1){- {B{U[\[Go Blue\]](/trigger join_blue_team set 1){- {Y{U[\[Spectate\]](/trigger spectate set 1){- {G{U[\[Start!\]](/trigger start_game set 1){- {R{U[\[Stop!\]](/trigger stop_game set 1){- {W{U[\[Settings\]](/trigger settings set 1){-"
+end
+
+function join_red_team()
+    if @s[team=red]
+        tell @s "You're already on {Rred team{-"
+    else
+        /team join red @s
+        /gamemode adventure @s
+        tell @a "(@s) joined the {Rred team{-."
+        
+        @s.needs_spawn = True
+    end
+    
+    tell_options()
+end
+
+function join_blue_team()
+    if @s[team=blue]
+        tell @s "You're already on {Bblue team{-."
+    else
+        /team join blue @s
+        /gamemode adventure @s
+        tell @a "(@s) joined the {Bblue team{-."
+        
+        @s.needs_spawn = True
+    end
+    
+    tell_options()
+end
+
+function spectate()
+    if @s[gamemode=spectator]
+        tell @s "You're already spectating."
+    else
+        /team leave @s
+        /gamemode spectator @s
+        with
+            $(id) = @s.id
+        do
+            /bossbar set boost_$(id) players
+        end
+        tell @a "(@s) is now spectating."
+    end
+    
+    tell_options()
+end
+
+function start_game()
+    if gamemode == $Lobby
+        /kill @Glass[tag=Board]
+            
+        start_tipoff()
+        
+        Red.score = 0
+        Blue.score = 0
+        game_timer.score = -1
+        game_timer = 20*60*5
+        overtime = False
+        
+        /scoreboard players display numberformat game_timer score fixed "5:00"
+        /scoreboard players display name game_timer score "Time"
+            
+        /scoreboard objectives setdisplay sidebar score
+    else
+        tell @s "The game has already begun!"
+        tell_options()
+    end
+end
+
+function stop_game()
+    if gamemode == $Lobby
+        tell @s "The game is already stopped."
+        tell_options()
+    else
+        /scoreboard objectives setdisplay sidebar
+        start_lobby()
+    end
+end
+
+function settings()
+    tell_settings()
+end
+
+function tell_settings()
+    if sphere_mode
+        tell @s "Sphere Mode: {G{U[\[Enabled\]](/trigger setting_sphere)"
+    else
+        tell @s "Sphere Mode: {R{U[\[Disabled\]](/trigger setting_sphere)"
+    end
+    
+    tell @s "{Y{U[\[Back\]](/trigger tell_options)"
+end
+
+function setting_sphere()
+    if sphere_mode
+        sphere_mode = False
+        /data modify entity @BallBlock item.tag.CustomModelData set value 0
+    else
+        sphere_mode = True
+        /data modify entity @BallBlock item.tag.CustomModelData set value 1
+    end
+
+    as @PlayerBlock
+        player_block_init_shape()
+    end
+    
+    tell_settings()
+end
+
+function player_block_cube_mode()
+    /data modify entity @s item.tag.CustomModelData set value 0
+    /data modify entity @s item.id set value "minecraft:player_head"
+    with
+        $(collider) = @s.collider_id
+    do
+        define name collider = "collider_$(collider)"
+        collider.render_scale = 2000
+        collider.render_dy = 250
+    end
+end
+
+function player_block_init_shape()
+    if sphere_mode
+        player_block_sphere_mode()
+    else
+        player_block_cube_mode()
+    end
+end
+
+function player_block_sphere_mode()
+    /data modify entity @s item.tag.CustomModelData set value 1
+    if @s.team == $Red
+        /data modify entity @s item.id set value "minecraft:red_stained_glass"
+    else if @s.team == $Blue
+        /data modify entity @s item.id set value "minecraft:blue_stained_glass"
+    end
+    with
+        $(collider) = @s.collider_id
+    do
+        define name collider = "collider_$(collider)"
+        collider.render_scale = 1000
+        collider.render_dy = 0
+    end
+end
+
+function start_lobby()
+    spawn_players()
+    reset_ball()
+    
+    @Player.tell_options()
+
+    gamemode = $Lobby
+    
+    @Position.<pos> = <XnegPlane, YnegPlane + PortalHeight / 2, (ZnegPlane + ZposPlane) / 2>
+    at @Position
+        as create @Glass
+            @s.<scale> = <1000, PortalHeight, PortalWidth>
+            @s.<translation> = <-500, -PortalHeight / 2, -PortalWidth / 2>
+            /data modify entity @s block_state.Name set value "minecraft:birch_planks"
+            /tag @s add Board
+        end
+    end
+    
+    @Position.<pos> = <XposPlane, YnegPlane + PortalHeight / 2, (ZnegPlane + ZposPlane) / 2>
+    at @Position
+        as create @Glass
+            @s.<scale> = <1000, PortalHeight, PortalWidth>
+            @s.<translation> = <-500, -PortalHeight / 2, -PortalWidth / 2>
+            /data modify entity @s block_state.Name set value "minecraft:birch_planks"
+            /tag @s add Board
+        end
+    end
+
+    /tp @Position 0 0 0
+end
+
+function reset_game()
+    initialize_transforms()
+    
+    destroy_colliders()
+    /kill @PlayerInteraction
+    
+    as @Playing
+        /ride @s dismount
+    end
+    
+    /kill @Glass
+    
+    YnegPlane = 56000
+    YposPlane = YnegPlane + 36000
+    XposPlane = 45600
+    ZposPlane = 30000
+    XnegPlane = -XposPlane + 1000
+    ZnegPlane = -ZposPlane + 1000
+    
+    JumpPlane = YnegPlane + 2000
+    
+    @Position.<pos> = <(XnegPlane + XposPlane) / 2, (YnegPlane + YposPlane) / 2, ZposPlane>
+    at 0.5 74.0 30.0
+        as create @Glass
+            @s.<scale> = <XposPlane - XnegPlane, YposPlane - YnegPlane, 10>
+            @s.<translation> = <(XnegPlane - XposPlane) / 2, (YnegPlane - YposPlane) / 2, 0>
+        end
+    end
+    
+    @Position.<pos> = <(XnegPlane + XposPlane) / 2, (YnegPlane + YposPlane) / 2, ZnegPlane>
+    at @Position
+        as create @Glass
+            @s.<scale> = <XposPlane - XnegPlane, YposPlane - YnegPlane, 10>
+            @s.<translation> = <(XnegPlane - XposPlane) / 2, (YnegPlane - YposPlane) / 2, 0>
+        end
+    end
+
+    @Position.<pos> = <XposPlane, (YnegPlane + YposPlane) / 2, (ZnegPlane + ZposPlane) / 2>
+    at @Position
+        as create @Glass
+            @s.<scale> = <10, YposPlane - YnegPlane, ZposPlane - ZnegPlane>
+            @s.<translation> = <0, (YnegPlane - YposPlane) / 2, (ZnegPlane - ZposPlane) / 2>
+            /data modify entity @s block_state.Name set value "minecraft:red_stained_glass"
+        end
+    end
+    
+    @Position.<pos> = <XnegPlane, (YnegPlane + YposPlane) / 2, (ZnegPlane + ZposPlane) / 2>
+    at @Position
+        as create @Glass
+            @s.<scale> = <10, YposPlane - YnegPlane, ZposPlane - ZnegPlane>
+            @s.<translation> = <0, (YnegPlane - YposPlane) / 2, (ZnegPlane - ZposPlane) / 2>
+            /data modify entity @s block_state.Name set value "minecraft:blue_stained_glass"
+        end
+    end
+    
+    @Position.<pos> = <(XnegPlane + XposPlane) / 2, YposPlane, (ZnegPlane + ZposPlane) / 2>
+    at @Position
+        as create @Glass
+            @s.<scale> = <XposPlane - XnegPlane, 10, ZposPlane - ZnegPlane>
+            @s.<translation> = <(XnegPlane - XposPlane) / 2, 0, (ZnegPlane - ZposPlane) / 2>
+        end
+    end
+    
+    PortalHeight = 9000
+    PortalWidth = 13000
+
+    #@Position.<pos> = <XnegPlane, YnegPlane + PortalHeight / 2, (ZnegPlane + ZposPlane) / 2>
+    #at @Position
+    #    as create @Glass
+    #        @s.<scale> = <100, PortalHeight, PortalWidth>
+    #        @s.<translation> = <-50, -PortalHeight / 2, -PortalWidth / 2>
+    #        /data modify entity @s block_state.Name set value "minecraft:purple_wool"
+    #    end
+    #end
+    
+    #@Position.<pos> = <XposPlane, YnegPlane + PortalHeight / 2, (ZnegPlane + ZposPlane) / 2>
+    #at @Position
+    #    as create @Glass
+    #        @s.<scale> = <100, PortalHeight, PortalWidth>
+    #        @s.<translation> = <-50, -PortalHeight / 2, -PortalWidth / 2>
+    #        /data modify entity @s block_state.Name set value "minecraft:purple_wool"
+    #    end
+    #end
+
+    ObsidianHeight = PortalHeight + 2000
+    ObsidianWidth = PortalWidth + 2000
+    
+    #@Position.<pos> = <XnegPlane, YnegPlane + PortalHeight / 2, (ZnegPlane + ZposPlane) / 2>
+    #at @Position
+    #    as create @Glass
+    #        @s.<scale> = <50, ObsidianHeight, ObsidianWidth>
+    #        @s.<translation> = <-25, -ObsidianHeight / 2, -ObsidianWidth / 2>
+    #        /data modify entity @s block_state.Name set value "minecraft:obsidian"
+    #    end
+    #end
+    
+    #@Position.<pos> = <XposPlane, YnegPlane + PortalHeight / 2, (ZnegPlane + ZposPlane) / 2>
+    #at @Position
+    #    as create @Glass
+    #        @s.<scale> = <50, ObsidianHeight, ObsidianWidth>
+    #        @s.<translation> = <-25, -ObsidianHeight / 2, -ObsidianWidth / 2>
+    #        /data modify entity @s block_state.Name set value "minecraft:obsidian"
+    #    end
+    #end
+
+    /tp @Position 0 0 0
+
+    # Disable world collisions
+    colliders.world_collisions = False
+    
+    # Enable Impact Sounds
+    transforms.impact_sounds = True
+    
+    Restitution = 2000
+    Gravity = 20
+    PlayerGravity = 30 - Gravity
+    GoalGravity = 8 - Gravity
+    Friction = 1000
+    
+    SphereDrag = 990
+
+    CubeSize = $BallSize
+    CubeInvMass = 1200
+    CubeInvRotInt = 200
+    
+    sphere_mode = False
+
+    with
+        $(block_name) = "target"
+    add_collider(500, 56000 + CubeSize / 2, 500)
+    as @PhysicsBlock
+        /tag @s add BallBlock
+        @s.BallBlock = True
+    end
+    
+    collider_1.recent_motion = 0
+    collider_1.recent_rotation = 0
+    
+    CubeSize = $PlayerSize
+    CubeInvMass = 200
+    CubeInvRotInt = 1000
+    
+    start_lobby()
+end
+
+function add_player_block()
+    with
+        $(block_name) = "player_head"
+    add_collider(-10000, 56000 + CubeSize / 2, 0)
+end
+
+clock tick
+    time++
+
+    at 0.0 56.0 0.0
+        unless gamemode
+            stop_game()
+        end
+        
+        # Handle triggers
+        as @Player
+            unless @s.leave_game == 0
+                spectate()
+                @s.leave_game = 0
+            end
+            
+            for $trigger in $Triggers
+                /execute if score @s $trigger >= c1 Constant run function $namespace:$trigger
+                /scoreboard players set @s $trigger 0
+                /scoreboard players enable @s $trigger
+            end
+        end
+        
+        allow_movement = False
+        if gamemode == $Lobby
+            allow_movement = True
+        end
+        if gamemode == $Playing
+            allow_movement = True
+            if game_timer > 0
+                game_timer--
+            end
+
+            total_seconds = (game_timer + 19) / 20
+            disp_seconds = total_seconds % 60
+            disp_minutes = total_seconds / 60
+            with
+                $(sec) = disp_seconds
+                $(min) = disp_minutes
+            do
+                if disp_seconds < 10
+                    /scoreboard players display numberformat game_timer score fixed "$(min):0$(sec)"
+                else
+                    /scoreboard players display numberformat game_timer score fixed "$(min):$(sec)"
+                end
+            end
+            
+            if game_timer == 1200
+                title @a 0 35 15 "1 Minute"
+            end
+            
+            if game_timer > 0 and game_timer <= 100 and game_timer % 20 == 0
+                seconds = game_timer / 20
+                title @a 0 15 5 "(seconds)"
+                as @Player at @s
+                    /playsound minecraft:block.note_block.bit master @a ~ ~ ~ 1 1
+                end
+            end
+        end
+
+        if gamemode == $Scored
+            scored_timer--
+            
+            if scored_timer == 0
+                if overtime
+                    /scoreboard players reset game_timer score
+                    start_lobby()
+                else if game_timer <= 0
+                    end_game_time()
+                else
+                    start_tipoff()
+                end
+            end
+        end
+        
+        if gamemode == $Tipoff
+            display_time = False
+            
+            if tipoff_timer <= 60
+                display_time = True
+            end
+            
+            if tipoff_timer <= 100 unless overtime
+                display_time = True
+            end
+        
+            if display_time and tipoff_timer % 20 == 0
+                tipoff_seconds = tipoff_timer / 20
+                title @a 0 15 5 "(tipoff_seconds)"
+                
+                if tipoff_seconds <= 3 as @Player at @s
+                    /playsound minecraft:block.note_block.bit master @a ~ ~ ~ 1 1
+                end
+            end
+            
+            tipoff_timer--
+            
+            if tipoff_timer == 0
+                title @a 0 15 5 "Go!"
+                gamemode = $Playing
+                as @Player at @s
+                    /playsound minecraft:block.note_block.bit master @a ~ ~ ~ 1 2
+                end
+            end
+        end
+        
+        as @Player[gamemode=survival]
+            /gamemode adventure @s
+        end
+        
+        create @Position 0.0 0.0 0.0
+        
+        as @PlayerInteraction
+            on attacker
+                @s.boosting = 10
+            end
+            
+            on target
+                @s.jumping = True
+            end
+            /data remove entity @s attack
+            /data remove entity @s interaction
+        end
+        
+        if gamemode == $Playing and game_timer == 1 unless overtime
+            as @a at @s
+                /playsound minecraft:block.bell.use master @s
+            end
+        end
+        
+        tick_players()
+        
+        as @BallBlock at @s
+            if gamemode == $Scored and @s.collider_id == 1
+                /particle explosion ~ ~ ~ 2 2 2 0 10 force
+            end
+        end
+        
+        as @PlayerInteraction
+            id = @s.id
+            as @Player if @s.id == id
+            else
+                /kill @s
+            end
+        end
+        
+        as @PlayerBlock
+            current_id = @s.player_id
+            as @Playing if @s.id == current_id
+                player = True
+            else
+                player = False
+            end
+            
+            if not player
+                with
+                    $(collider) = @s.collider_id
+                destroy_collider()
+                /kill @s
+            end
+        end
+        
+        as @PlayerHead
+            current_id = @s.player_id
+            if sphere_mode as @Playing if @s.id == current_id
+                # Keep the player head
+            else
+                /kill @s
+            end
+        end
+        
+        as @Player if @s.needs_spawn
+            spawn_additional_player()
+            @s.needs_spawn = False
+        end
+        
+        if gamemode == $StartingGame
+            start_tipoff()
+        end
+        
+        colliders_physics_tick()
+        if sphere_mode
+            colliders_get_sphere_bounds()
+            get_sphere_sphere_collisions()
+            angular_momentum_drag()
+        else
+            colliders_get_new_collisions()
+        end
+        
+        ball_old_vx = collider_1.velocity_x
+        ball_old_vy = collider_1.velocity_y
+        ball_old_vz = collider_1.velocity_z
+        
+        get_plane_collisions()
+        collision_game_logic()
+        colliders_resolve_collisions()
+        colliders_finalize_tick()
+        
+        ball_new_vx = collider_1.velocity_x
+        ball_new_vy = collider_1.velocity_y
+        ball_new_vz = collider_1.velocity_z
+        
+        if gamemode == $Playing
+            check_for_save()
+        end
+        
+        if DisplayAcc
+            as @PlayerBlock
+                @Position.<pos> = @s.<pos>
+                at @Position
+                    @Position.<pos> += <player_acc_x, 0, player_acc_z>
+                    facing @Position
+                        as @RopeSegment
+                            len = sqrt(player_acc_x*player_acc_x + player_acc_z*player_acc_z)
+            
+                            /data modify storage $namespace:global scale set value [0.05f, 0.05f, 0.05f]
+                            /execute store result storage $namespace:global scale[2] float 0.001 run scoreboard players get Global len
+                            /data modify entity @s transformation.scale set from storage $namespace:global scale
+                            #/data modify entity @s start_interpolation set value 0b
+
+                            /tp @s ~ ~ ~ ~ ~
+                        end
+                    end
+                end
+            end
+        end
+
+        as @NameTag
+            current_id = @s.player_id
+            collider_id = 0
+            as @PlayerBlock if @s.player_id == current_id
+                player = True
+                <pos> = @s.<pos>
+                team = @s.team
+                collider_id = @s.collider_id
+            else
+                player = False
+            end
+            
+            if player
+                @s.<pos> = <pos>
+                @s.y += 500
+
+                unless team == @s.team
+                    if team == $Red
+                        /team join red
+                    else if team == $Blue
+                        /team join blue
+                    end
+
+                    @s.team = team
+                end
+            else
+                /kill @s
+            end
+            
+            as @PlayerHead if @s.player_id == current_id
+                @s.<pos> = <pos>
+                
+                if collider_id
+                    with
+                        $(collider) = collider_id
+                    set_player_head_transformation()
+                end
+            end
+        end
+    end
+end
+
+function tick_players()
+    for @player in @Playing
+        /effect give @s minecraft:resistance infinite 5 true
+        /effect give @s minecraft:instant_health infinite 5 true
+        /effect give @s minecraft:saturation infinite 5 true
+        /effect give @s minecraft:invisibility infinite 5 true
+        
+        at @s ~ ~ ~
+            at @s ^ ^ ^
+                /tp @Position ~ ~ ~
+                <x, y, z> = @Position.<pos>
+            end
+            
+            at @s ^ ^ ^1
+                /tp @Position ~ ~ ~
+                <dx, dy, dz> = @Position.<pos> - <x, y, z>
+            end
+            
+            /tp @Position 0 0 0
+            
+            mx = @s.vx
+            mz = @s.vz
+            
+            speed = sqrt(mx*mx + mz*mz)
+            
+            horiz_mag = sqrt(dx*dx + dz*dz)
+            if DisplayAcc
+                horiz_mag = 1000
+            end
+            
+            dx = mx * horiz_mag / speed
+            dz = mz * horiz_mag / speed
+            
+            unless @s.id
+                player_id++
+                @s.id = player_id
+            end
+            
+            current_id = @s.id
+            
+            jumping = @s.jumping
+            @s.jumping = False
+            
+            @s.boosting--
+            boosting = @s.boosting
+            
+            if @s.menu_cooldown
+                @s.menu_cooldown--
+            end
+            
+            if @s[team=red]
+                team = $Red
+            else if @s[team=blue]
+                team = $Blue
+            else
+                team = None
+            end
+        
+            as @PlayerInteraction if @s.id == current_id
+                /tp @s ~ ~-2 ~
+            else
+                as create @PlayerInteraction
+                    @s.id = current_id
+                end
+            end
+
+            as @PlayerBlock at @s if @s.player_id == current_id
+                dismounted = result
+                    /ride @player mount @s
+                    
+                if dismounted as @player unless @s.menu_cooldown > 0
+                    tell_options()
+                    @s.menu_cooldown = 20
+                end
+                
+                unless team == @s.team
+                    if team == $Red
+                        /team join red
+                    else if team == $Blue
+                        /team join blue
+                    end
+
+                    @s.team = team
+                    player_block_init_shape()
+                end
+                
+                with
+                    $(collider) = @s.collider_id
+                do
+                    define name collider = "collider_$(collider)"
+                    
+                    if collider.id
+                        vx = collider.velocity_x
+                        vy = collider.velocity_y
+                        vz = collider.velocity_z
+                        
+                        if allow_movement
+                            horiz_vel = sqrt(vx*vx + vz*vz)
+                            norm_vx = vx * $Precision / horiz_vel
+                            norm_vz = vz * $Precision / horiz_vel
+                            
+                            braking_dot = -(dx * norm_vx + dz * norm_vz) / $Precision
+                            
+                            if braking_dot > 0
+                                dx = dx * ($Precision + braking_dot) / $Precision
+                                dz = dz * ($Precision + braking_dot) / $Precision
+                            end
+                            
+                            if jumping and collider.y <= JumpPlane
+                                vy = 500
+                                @s.braking = False
+                                /playsound minecraft:entity.goat.long_jump master @a ~ ~ ~
+                            end
+                            
+                            if boosting and @s.boost_meter > 0
+                                @s.boost_meter--
+                            else if @s.boost_meter < 100
+                                @s.boost_meter++
+                                boosting = 0
+                            end
+                            
+                            if boosting
+                                vx += dx / 20
+                                vy += dy / 20
+                                vz += dz / 20
+                                
+                                if boosting == 9
+                                    /playsound minecraft:entity.blaze.shoot master @a ~ ~ ~ 0.2 2
+                                end
+                                /particle minecraft:soul_fire_flame ~ ~ ~ 0 0 0 0 1 force
+                            else
+                                vx += dx / 30
+                                vy += dy / 80
+                                vz += dz / 30
+                                
+                                if dx == 0 and dz == 0
+                                else
+                                    /particle minecraft:flame ~ ~ ~ 0 0 0 0 1 force
+                                end
+                            end
+                        end
+                        
+                        player_acc_x = dx
+                        player_acc_z = dz
+                        
+                        if gamemode == $Scored
+                            vy -= GoalGravity
+                        else
+                            # Extra gravity on the vehicle
+                            vy -= PlayerGravity
+                        end
+
+                        collider.velocity_x = vx
+                        collider.velocity_y = vy
+                        collider.velocity_z = vz
+                        
+                        collider_wake_up() with macros
+                    else
+                        tell @a "Error: No collider with id (@s.collider_id) for (@player)"
+                    end
+                end
+                
+                with
+                    $(id) = current_id
+                do
+                    /execute store result bossbar boost_$(id) value run scoreboard players get @s boost_meter
+                end
+            else
+                @PhysicsBlock.block_age = 1
+                add_player_block()
+                as @PhysicsBlock 
+                    @s.block_age++
+                    if @s.block_age == 1
+                        @s.player_id = current_id
+                        /tag @s add PlayerBlock
+                        /ride @player mount @s
+                        @s.boost_meter = 100
+                        
+                        with
+                            $(id) = current_id
+                        do
+                            /bossbar add boost_$(id) "Boost Meter"
+                            /bossbar set boost_$(id) players @player
+                            /bossbar set boost_$(id) value 100
+                        end
+                        
+                        if team == $Red
+                            /team join red
+                        else if team == $Blue
+                            /team join blue
+                        end
+                        @s.team = team
+                        
+                        /data modify entity @s Glowing set value 1b
+                    end                
+                end
+                
+                /item modify entity @PhysicsBlock[block_age==1,limit=1] container.0 $namespace:set_head
+                
+                as @PhysicsBlock if @s.block_age == 1
+                    # This must be done after the player head is set
+                    player_block_init_shape()
+                end
+
+                
+                as @PhysicsBlock[block_age==1]
+                    /data modify storage $namespace:global name set from entity @s item.tag.SkullOwner.Name
+                end
+                
+                as create @NameTag
+                    @s.player_id = current_id
+                    /data modify entity @s CustomName set from storage $namespace:global name
+
+                    if team == $Red
+                        /team join red
+                    else if team == $Blue
+                        /team join blue
+                    end
+                    @s.team = team
+                end
+            end
+            
+            if sphere_mode
+                as @PlayerHead if @s.player_id == current_id
+                else
+                    @PlayerHead.head_age++
+                    create @PlayerHead
+                    @PlayerHead.head_age++
+                    
+                    /item modify entity @PlayerHead[head_age==1,limit=1] container.0 $namespace:set_head
+                    as @PlayerHead if @s.head_age == 1
+                        @s.player_id = current_id
+                    end
+                end
+            end
+            
+            @s.boosting = boosting
+        end
+        
+        if @s.demo_sound at @s
+            @s.demo_sound = False
+            /playsound minecraft:entity.generic.explode master @s ~ ~ ~ 1 1 0.5
+        end
+    end
+end
+
+function get_plane_collisions()
+    for collider_iter = 1 to max_collider
+        with
+            $(collider) = collider_iter
+        do
+            define name collider = "collider_$(collider)"
+            
+            if collider.id
+                define name collider_axis_0 = "collider_$(collider)"
+                
+                y = collider.min_y
+                if y <= YnegPlane
+                    pen = YnegPlane - y
+                    
+                    if pen > collider.max_pen
+                        with
+                            $(vertex) = collider.min_y_vertex
+                        do
+                            if sphere_mode
+                                x = collider.x
+                                z = collider.z
+                            else
+                                define name vertex = "collider_$(collider)_v$(vertex)"
+
+                                x = vertex.x
+                                z = vertex.z
+                            end
+                        end
+                        
+                        nx = 0
+                        ny = $Precision
+                        nz = 0
+                        
+                        create_plane_collision() with macros
+                    end
+                    
+                    if collider_iter == 1 and gamemode == $Playing and game_timer <= 0 unless overtime
+                        end_game_time()
+                    end
+                end
+                
+                y = collider.max_y
+                if y >= YposPlane
+                    pen = y - YposPlane
+                    
+                    if pen > collider.max_pen
+                        with
+                            $(vertex) = collider.max_y_vertex
+                        do
+                            if sphere_mode
+                                x = collider.x
+                                z = collider.z
+                            else
+                                define name vertex = "collider_$(collider)_v$(vertex)"
+
+                                x = vertex.x
+                                z = vertex.z
+                            end
+                        end
+                        
+                        nx = 0
+                        ny = -$Precision
+                        nz = 0
+                        
+                        create_plane_collision() with macros
+                    end
+                end
+
+                x = collider.min_x
+                if x <= XnegPlane
+                    pen = XnegPlane - x
+                    
+                    if pen > collider.max_pen
+                        with
+                            $(vertex) = collider.min_x_vertex
+                        do
+                            if sphere_mode
+                                y = collider.y
+                                z = collider.z
+                            else
+                                define name vertex = "collider_$(collider)_v$(vertex)"
+
+                                y = vertex.y
+                                z = vertex.z
+                            end
+                        end
+                        
+                        if gamemode == $Playing and collider_iter == 1 
+                            goal = $Blue
+                            if y <= YnegPlane + PortalHeight and z >= (ZnegPlane + ZposPlane) / 2 - PortalWidth / 2 and z <= (ZnegPlane + ZposPlane) / 2 + PortalWidth / 2
+                                score_goal()
+                            else
+                                check_near_miss()
+                            end
+                        end
+                        
+                        nx = $Precision
+                        ny = 0
+                        nz = 0
+                        
+                        create_plane_collision() with macros
+                    end
+                end
+                
+                x = collider.max_x
+                if x >= XposPlane
+                    pen = x - XposPlane
+                    
+                    if pen > collider.max_pen
+                        with
+                            $(vertex) = collider.max_x_vertex
+                        do
+                            if sphere_mode
+                                y = collider.y
+                                z = collider.z
+                            else
+                                define name vertex = "collider_$(collider)_v$(vertex)"
+
+                                y = vertex.y
+                                z = vertex.z
+                            end
+                        end
+                        
+                        if gamemode == $Playing and collider_iter == 1 
+                            goal = $Red
+                            if y <= YnegPlane + PortalHeight and z >= (ZnegPlane + ZposPlane) / 2 - PortalWidth / 2 and z <= (ZnegPlane + ZposPlane) / 2 + PortalWidth / 2
+                                score_goal()
+                            else
+                                check_near_miss()
+                            end
+                        end
+                        
+                        nx = -$Precision
+                        ny = 0
+                        nz = 0
+                        
+                        create_plane_collision() with macros
+                    end
+                end
+
+                z = collider.min_z
+                if z <= ZnegPlane
+                    pen = ZnegPlane - z
+                    
+                    if pen > collider.max_pen
+                        with
+                            $(vertex) = collider.min_z_vertex
+                        do
+                            if sphere_mode
+                                x = collider.x
+                                y = collider.y
+                            else
+                                define name vertex = "collider_$(collider)_v$(vertex)"
+
+                                x = vertex.x
+                                y = vertex.y
+                            end
+                        end
+                        
+                        nx = 0
+                        ny = 0
+                        nz = $Precision
+                        
+                        create_plane_collision() with macros
+                    end
+                end
+                
+                z = collider.max_z
+                if z >= ZposPlane
+                    pen = z - ZposPlane
+                    
+                    if pen > collider.max_pen
+                        with
+                            $(vertex) = collider.max_z_vertex
+                        do
+                            if sphere_mode
+                                x = collider.x
+                                y = collider.y
+                            else
+                                define name vertex = "collider_$(collider)_v$(vertex)"
+
+                                x = vertex.x
+                                y = vertex.y
+                            end
+                        end
+                        
+                        nx = 0
+                        ny = 0
+                        nz = -$Precision
+                        
+                        create_plane_collision() with macros
+                    end
+                end
+            end
+        end
+    end
+end
+
+function create_plane_collision()
+    define name collider = "collider_$(collider)"
+    
+    id = get_unused_collision_id()
+    with
+        $(collision) = id
+    do
+        define name collision = "collision_$(collision)"
+        collision.id = id
+        collision.type = 0
+        collision.pen = pen
+        
+        collision.x = x
+        collision.y = y
+        collision.z = z
+        
+        collision.nx = nx
+        collision.ny = ny
+        collision.nz = nz
+        
+        collision.restitution = 600
+        
+        collision.collider1 = collider_iter
+    end
+
+    collider.max_pen = pen
+    collider.max_pen_col = id
+end
+
+function end_game_time()
+    if Red.score == Blue.score
+        start_overtime()
+    else
+        end_game()
+    end
+end
+
+function start_overtime()
+    overtime = True
+    
+    title @a 0 40 20 "Overtime!"
+    subtitle @a 0 40 20 "Next goal wins!"
+    
+    start_tipoff()
+    tipoff_timer = 120
+end
+
+function end_game()
+    if Red.score > Blue.score
+        title @a 0 55 25 "{RRed{- Team Wins!"
+    end
+    
+    if Red.score < Blue.score
+        title @a 0 55 25 "{BBlue{- Team Wins!"
+    end
+    
+    if Red.score == Blue.score
+        title @a 0 55 25 "Draw!"
+    end
+    
+    /scoreboard players reset game_timer score
+    
+    start_lobby()
+end
+
+function spawn_players()
+    tell_options()
+
+    as @Playing[team=red]
+        @s.team = $Red
+    end
+    as @Playing[team=blue]
+        @s.team = $Blue
+    end
+    
+    as @Playing
+        @s.spawn_seed = result
+            /random value 1..999999999
+        @s.spawned = False
+    end
+    
+    team = $Red
+    spawn_team()
+    
+    team = $Blue
+    spawn_team()
+    
+    spawned_players = True
+end
+
+function spawn_team()
+    for spawn = 1 to 100
+        lowest_seed = $Billion
+        as @Playing
+            is_lower = True
+            
+            unless @s.team == team
+                is_lower = False
+            end
+            
+            if @s.spawned
+                is_lower = False
+            end
+            
+            if @s.spawn_seed > lowest_seed
+                is_lower = False
+            end
+            if is_lower
+                lowest_seed = @s.spawn_seed
+                lowest_id = @s.id
+            end
+        end
+            
+        if lowest_seed < $Billion
+            as @Playing if @s.id == lowest_id
+                spawn_player_slot()
+            end
+        else
+            spawn = $Billion
+        end
+    end
+end
+
+function spawn_additional_player()
+    @Player[team=red].team = $Red
+    @Player[team=blue].team = $Blue
+    
+    team = @s.team
+    spawn = 0
+    
+    as @Player if @s.team == team
+        spawn++
+    end
+    
+    spawn_player_slot()
+end
+
+function spawn_player_slot()
+    if spawn == 1
+        spawn_dx = 15000
+        spawn_dz = 15000
+    else if spawn == 2
+        spawn_dx = 15000
+        spawn_dz = -15000
+    else if spawn == 3
+        spawn_dx = 30000
+        spawn_dz = 0
+    else
+        spawn_dx = 30000
+        spawn_dz = 2000
+    end
+    
+    if team == $Blue
+        spawn_dx *= -1
+        spawn_dz *= -1
+    end
+    
+    spawn_player()
+end
+
+function spawn_player()
+    spawn_x = $Half + spawn_dx
+    spawn_y = YnegPlane + CubeSize / 2
+    
+    if spawn_offset
+        spawn_y += spawn_offset
+        spawn_offset = 0
+    end
+    
+    spawn_z = $Half + spawn_dz
+    
+    id = @s.id
+                
+    as @PlayerBlock if @s.player_id == id
+        with
+            $(collider) = @s.collider_id
+        do
+            define name collider = "collider_$(collider)"
+            collider.x = spawn_x
+            collider.y = spawn_y
+            collider.z = spawn_z
+            collider_clear_velocity() with macros
+            
+            collider_clear_rotation() with macros
+            collider.w = $Precision
+            collider.i = 0
+            collider.j = 0
+            collider.k = 0
+        end
+        
+        @s.<pos> = <spawn_x, spawn_y, spawn_z>
+        
+        @s.boost_meter = 100
+    end
+    
+    @s.spawned = True
+end
+
+function reset_ball()
+    with
+        $(collider) = 1
+    do
+        define name collider = "collider_$(collider)"
+        collider.x = $Half
+        collider.y = YnegPlane + $BallSize / 2
+        collider.z = $Half
+        collider_clear_velocity() with macros
+        collider_clear_rotation() with macros
+        collider.w = $Precision
+        collider.i = 0
+        collider.j = 0
+        collider.k = 0
+                    
+        collider_quaternion_to_transform() with macros
+        collider_set_transform() with macros
+        collider_sleep() with macros
+    end
+end
+
+function score_goal()
+    gamemode = $Scored
+    as @Player at @s
+        /playsound minecraft:ui.toast.challenge_complete master @s 0 0 0 1 1 1
+    end
+
+    since_blue = time - last_blue_time
+    since_red = time - last_red_time
+    
+    if goal == $Red
+        if overtime
+            title @a 0 60 20 "{BBlue{- team wins!"
+        else
+            title @a 0 60 20 "Goal scored by {BBlue{-!"
+        end
+        
+        Blue.score++
+        
+        if since_blue <= 80
+            as @Playing if @s.id == last_blue_hit
+                subtitle @a 0 60 20 "Scored by {B(@s){-!"
+            end
+        else if since_red <= 40
+            as @Playing if @s.id == last_red_hit
+                subtitle @a 0 60 20 "Oops! {R(@s){- hit it in!"
+            end
+        end
+    else
+        if overtime
+            title @a 0 60 20 "{RRed{- team wins!"
+        else
+            title @a 0 60 20 "Goal scored by {RRed{-!"
+        end
+        
+        Red.score++
+
+        if since_red <= 80
+            as @Playing if @s.id == last_red_hit
+                subtitle @a 0 60 20 "Scored by {R(@s){-!"
+            end
+        else if since_blue <= 40
+            as @Playing if @s.id == last_blue_hit
+                subtitle @a 0 60 20 "Oops! {B(@s){- hit it in!"
+            end
+        end
+    end
+    
+    for collider_iter = 2 to max_collider
+        with
+            $(collider) = collider_iter
+        do
+            define name collider = "collider_$(collider)"
+            
+            if collider.id
+                dx = (collider.x - x) / 10
+                dy = (collider.y - y) / 10
+                dz = (collider.z - z) / 10
+                
+                vx = collider.velocity_x
+                vy = collider.velocity_y
+                vz = collider.velocity_z
+                
+                dist = sqrt(dx*dx + dy*dy + dz*dz)
+                
+                vx += dx * $Precision / dist * 3
+                vy += dy * $Precision / dist * 3
+                vz += dz * $Precision / dist * 3
+                
+                vx /= 2
+                vy /= 2
+                vz /= 2
+                
+                if collider.y <= JumpPlane
+                    vy = 750
+                end
+                
+                collider.velocity_x = vx
+                collider.velocity_y = vy
+                collider.velocity_z = vz
+                
+                collider.rotation_x /= 4
+                collider.rotation_y /= 4
+                collider.rotation_z /= 4
+            end
+        end
+    end
+    
+    scored_timer = 100
+end
+
+function start_tipoff()
+    gamemode = $Tipoff
+    
+    spawn_players()
+    reset_ball()
+    tipoff_timer = 100
+end
+
+function set_player_head_transformation()
+    define name collider = "collider_$(collider)"
+    
+    size = collider.size * 11 / 10
+    
+    d00 = collider.t00 * size / $Precision
+    d01 = collider.t01 * size / $Precision
+    d02 = collider.t02 * size / $Precision
+    d10 = collider.t10 * size / $Precision
+    d11 = collider.t11 * size / $Precision
+    d12 = collider.t12 * size / $Precision
+    d20 = collider.t20 * size / $Precision
+    d21 = collider.t21 * size / $Precision
+    d22 = collider.t22 * size / $Precision
+    dx = d01 * 250 / $Precision
+    dy = d11 * 250 / $Precision
+    dz = d21 * 250 / $Precision
+    
+    for $pair in [[0,"d00"], [1,"d01"], [2,"d02"], [3,"dx"], [4,"d10"], [5,"d11"], [6,"d12"], [7,"dy"], [8,"d20"], [9,"d21"], [10,"d22"], [11,"dz"]]
+        $idx = $pair[0]
+        $var = $pair[1]
+        $downscale = 1.0 / $Precision
+        /execute store result storage $namespace:global transformation[$idx] float $downscale run scoreboard players get Global $var
+    end
+    
+    /data modify entity @s transformation set from storage $namespace:global transformation
+    /data modify entity @s start_interpolation set value 0
+end
+
+function colliders_get_sphere_bounds()
+    for collider_iter = 1 to max_collider
+        with
+            $(collider) = collider_iter
+        do
+            define name collider = "collider_$(collider)"
+            
+            if collider.id
+                halfsize = collider.halfsize
+                
+                collider.min_x = collider.x - halfsize
+                collider.max_x = collider.x + halfsize
+                collider.min_y = collider.y - halfsize
+                collider.max_y = collider.y + halfsize
+                collider.min_z = collider.z - halfsize
+                collider.max_z = collider.z + halfsize
+            end
+        end
+    end
+end
+
+function get_sphere_sphere_collisions()
+    for collider1 = 1 to max_collider
+        for collider2 = collider1 + 1 to max_collider
+            with
+                $(collider1) = collider1
+                $(collider2) = collider2
+            do
+                define name collider1 = "collider_$(collider1)"
+                define name collider2 = "collider_$(collider2)"
+                
+                if collider1.id and collider2.id
+                    get_sphere_sphere_collision() with macros
+                end
+            end
+        end
+    end
+end
+
+function get_sphere_sphere_collision()
+    define name collider1 = "collider_$(collider1)"
+    define name collider2 = "collider_$(collider2)"
+    
+    x1 = collider1.x
+    y1 = collider1.y
+    z1 = collider1.z
+    
+    dx = collider2.x - x1
+    dy = collider2.y - y1
+    dz = collider2.z - z1
+    
+    halfsize1 = collider1.halfsize
+    halfsize = halfsize1 + collider2.halfsize
+    
+    block_halfsize = halfsize / $Precision + 2
+    
+    block_dx = dx / $Precision
+    block_dy = dy / $Precision
+    block_dz = dz / $Precision
+    
+    block_dist_sq = block_dx*block_dx + block_dy*block_dy + block_dz*block_dz
+    
+    if block_dist_sq < block_halfsize * block_halfsize
+        dist_sq = dx*dx + dy*dy + dz*dz
+        
+        if dist_sq <= halfsize*halfsize
+            dist = sqrt(dist_sq)
+            
+            pen = halfsize - dist
+            nx = dx * -$Precision / dist
+            ny = dy * -$Precision / dist
+            nz = dz * -$Precision / dist
+
+            x = x1 - nx * halfsize1 / $Precision
+            y = y1 - ny * halfsize1 / $Precision
+            z = z1 - nz * halfsize1 / $Precision
+            
+            id = get_unused_collision_id()
+            
+            with
+                $(collision) = id
+            do
+                define name collision = "collision_$(collision)"
+                collision.id = id
+                collision.type = 0
+                collision.pen = pen
+                
+                collision.x = x
+                collision.y = y
+                collision.z = z
+                
+                collision.nx = nx
+                collision.ny = ny
+                collision.nz = nz
+                
+                collision.collider1 = collider1
+                collision.collider2 = collider2
+            end
+
+            collider1.max_pen = pen
+            collider1.max_pen_col = id
+
+            collider2.max_pen = pen
+            collider2.max_pen_col = id
+        end
+    end
+end
+
+function angular_momentum_drag()
+    unless SphereDrag
+        SphereDrag = 990
+    end
+
+    for collider_iter = 1 to max_collider
+        with
+            $(collider) = collider_iter
+        do
+            define name collider = "collider_$(collider)"
+            
+            if collider.id            
+                collider.rotation_x = (collider.rotation_x * SphereDrag + $Half) / $Precision
+                collider.rotation_y = (collider.rotation_y * SphereDrag + $Half) / $Precision
+                collider.rotation_z = (collider.rotation_z * SphereDrag + $Half) / $Precision
+            end
+        end
+    end
+end
+
+function collision_game_logic()
+    for collision_iter = 1 to max_collision
+        with
+            $(collision) = collision_iter
+        do
+            define name collision = "collision_$(collision)"
+            define name collider = "collider_$(collider)"
+            
+            if collision.id            
+                collider1 = collision.collider1
+                collider2 = collision.collider2
+                
+                as @BallBlock if @s.collider_id == collider1
+                    as @PlayerBlock if @s.collider_id == collider2
+                        @Position.<pos> = <collision.x, collision.y, collision.z>
+                        
+                        with
+                            $(collider) = collider1
+                        do
+                            v1x = collider.velocity_x
+                            v1y = collider.velocity_y
+                            v1z = collider.velocity_z
+                        end
+                        
+                        with
+                            $(collider) = collider2
+                        do
+                            v2x = collider.velocity_x
+                            v2y = collider.velocity_y
+                            v2z = collider.velocity_z
+                        end
+                        
+                        dvx = v2x - v1x
+                        dvy = v2y - v1y
+                        dvz = v2z - v1z
+                        
+                        dsq = (dvx*dvx + dvy*dvy + dvz*dvz)
+                        $Threshold = 200
+                        
+                        if dsq >= $Threshold * $Threshold
+                            at @Position
+                                /playsound minecraft:block.note_block.basedrum master @a ~ ~ ~ 1 1
+                                /particle minecraft:item_snowball ~ ~ ~ 0.2 0.2 0.2 0 10 force
+                            end
+                        end
+
+                        if @s.team == $Red
+                            last_red_hit = @s.player_id
+                            last_red_time = time
+                        else if @s.team == $Blue
+                            last_blue_hit = @s.player_id
+                            last_blue_time = time
+                        end
+                    end
+                end
+                
+                player_id1 = None
+                player_id2 = None
+                
+                if collider1 as @PlayerBlock if @s.collider_id == collider1
+                    with
+                        $(collider) = collider1
+                    do
+                        v1x = collider.velocity_x
+                        v1y = collider.velocity_y
+                        v1z = collider.velocity_z
+                    end
+                    
+                    player_id1 = @s.player_id
+                    team1 = @s.team
+                end
+                
+                if collider2 as @PlayerBlock if @s.collider_id == collider2
+                    with
+                        $(collider) = collider2
+                    do
+                        define name collider = "collider_$(collider)"
+                        v2x = collider.velocity_x
+                        v2y = collider.velocity_y
+                        v2z = collider.velocity_z
+                    end
+
+                    player_id2 = @s.player_id
+                    team2 = @s.team
+                end
+                
+                if player_id1 and player_id2 unless team1 == team2            
+                    v1 = sqrt(v1x*v1x + v1y*v1y + v1z*v1z)
+                    v2 = sqrt(v2x*v2x + v2y*v2y + v2z*v2z)
+                    
+                    if v1 > v2 and v1 > $DemoVelocity
+                        demolish(player_id1, player_id2)
+                        delete_collision() with macros
+                    else if v2 > v1 and v2 > $DemoVelocity
+                        demolish(player_id2, player_id1)
+                        delete_collision() with macros
+                    end
+                end
+            end
+        end
+    end
+end
+
+function demolish(demolishing, demolished)
+    @Player.demolishing = False
+    @Player.demolished = False
+
+    as @Playing
+        if @s.id == demolishing
+            @s.demolishing = True
+        end
+        
+        if @s.id == demolished
+            @s.demolished = True
+        end
+    end
+    
+    as @Playing
+        if @s.id == demolishing
+            tell @s "You demolished (@Playing[demolished])!"
+        end
+
+        if @s.id == demolished
+            at @s
+                /particle minecraft:explosion ~ ~ ~ 2 2 2 0 20 force
+                /playsound minecraft:entity.generic.explode master @a ~ ~ ~ 1 1 0.5
+                @s.demo_sound = True
+            end
+        
+            @s.demolished = True
+            tell @s "You were demolished by (@Playing[demolishing])!"
+            
+            as @PlayerBlock if @s.player_id == demolished
+                team = @s.team
+            end
+            
+            spawn = 3
+            spawn_offset = 10000
+            spawn_player_slot()
+
+            as @PlayerBlock if @s.player_id == demolished
+                @s.boost_meter = -60
+            end
+        end
+    end
+    
+    tell @a[not demolished, not demolishing] "(@Playing[demolishing]) demolished (@Playing[demolished])"
+end
+
+function check_for_save()
+    if ball_old_vx > 0
+        x_plane = XposPlane
+        goal = $Red
+    else
+        x_plane = XnegPlane
+        goal = $Blue
+    end
+    
+    t = (x_plane - collider_1.x) / ball_old_vx
+    
+    if t > 0 and t <= 20
+        # Ball will hit wall within half a second
+        y = collider_1.y + t * ball_old_vy
+        z = collider_1.z + t * ball_old_vz
+        
+        if y <= YnegPlane + PortalHeight and z >= (ZnegPlane + ZposPlane) / 2 - PortalWidth / 2 and z <= (ZnegPlane + ZposPlane) / 2 + PortalWidth / 2
+            # Ball will hit portal
+            t = (x_plane - collider_1.x) / ball_new_vx
+            saved = False
+            if t < 0
+                saved = True
+            else if t > 30
+                saved = True
+            end
+            
+            y = collider_1.y + t * ball_new_vy
+            z = collider_1.z + t * ball_new_vz
+            
+            if y > YnegPlane + 2 * PortalHeight
+                saved = True
+            else if z <= (ZnegPlane + ZposPlane) / 2 - PortalWidth
+                saved = True
+            else if z >= (ZnegPlane + ZposPlane) / 2 + PortalWidth
+                saved = True
+            end
+            
+            if saved
+                if goal == $Red
+                    if time - last_red_time < 5 
+                        as @Playing if @s.id == last_red_hit
+                            title @a ""
+                            subtitle @a 0 40 20 "Saved by {R(@s){-!"
+                        end
+                    end
+                else
+                    if time - last_blue_time < 5 
+                        as @Playing if @s.id == last_blue_hit
+                            title @a ""
+                            subtitle @a 0 40 20 "Saved by {B(@s){-!"
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+function check_near_miss()
+    yp = y - (YnegPlane + PortalHeight)
+    zn = ((ZnegPlane + ZposPlane) / 2 - PortalWidth / 2) - z
+    zp = z - ((ZnegPlane + ZposPlane) / 2 + PortalWidth / 2)
+    
+    dist = 0
+    if yp > dist
+        dist = yp
+    end
+    
+    if zn > dist
+        dist = zn
+    end
+    
+    if zp > dist
+        dist = zp
+    end
+    
+    dist += 100
+    
+    if dist < 4000
+        dist_ones = dist / $Precision
+        dist_tenths = dist / 100 % 10
+        if goal == $Blue
+            since = time - last_red_time
+            if since < 40
+                as @Playing if @s.id == last_red_hit
+                    title @a 0 40 20 ""
+                    subtitle @a 0 40 20 "{R(@s){- missed by (dist_ones).(dist_tenths)m!"
+                end
+            end
+        else
+            since = time - last_blue_time
+            if since < 40
+                as @Playing if @s.id == last_blue_hit
+                    title @a 0 40 20 ""
+                    subtitle @a 0 40 20 "{B(@s){- missed by (dist_ones).(dist_tenths)m!"
+                end
+            end
+        end
+    end
+
+end
+
+function test_shot()
+    collider_1.x = 500
+    collider_1.y = 56000
+    collider_1.z = 500
+    collider_1.velocity_x = 1500
+    collider_1.velocity_y = 400
+    collider_1.velocity_z = 0
+    
+    last_blue_time = time
+    last_blue_hit = @Player[team=blue,limit=1].id
+    
+    with
+        $(collider) = 1
+    collider_wake_up()
+end

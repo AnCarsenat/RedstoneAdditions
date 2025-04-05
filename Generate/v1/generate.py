@@ -142,12 +142,24 @@ def generate_block_tick():
         blocks_mcfunction.write_line(f"execute as {block_data.generate_child_entities_selector_from_id('minecraft:armor_stand')} at @s if score @s reddition.temp matches 1 run data remove block ~ ~ ~ Items[0]")
         blocks_mcfunction.write_line("scoreboard players reset @e[type=minecraft:armor_stand] reddition.temp")
 
+    def breeder():
+        block_data = BLOCKS["breeder"]
+        blocks_mcfunction.write_line("#" + "breeder")
+        blocks_mcfunction.write_line(f"execute as {block_data.generate_child_entities_selector_from_id('minecraft:armor_stand')} at @s unless block ~ ~ ~ {block_data.block_place.block} run kill @s")
+        # Move items from current block to block in front
+        # Try to move item, storing success in a score
+        blocks_mcfunction.write_line(f"execute as {block_data.generate_child_entities_selector_from_id('minecraft:armor_stand')} at @s if data block ~ ~ ~ Items[0] store success score @s reddition.temp run data modify block ^ ^0 ^1 Items append from block ~ ~ ~ Items[0]")
+        # Only remove the item if the move was successful (score=1)
+        blocks_mcfunction.write_line(f"execute as {block_data.generate_child_entities_selector_from_id('minecraft:armor_stand')} at @s if score @s reddition.temp matches 1 run data remove block ~ ~ ~ Items[0]")
+        blocks_mcfunction.write_line("scoreboard players reset @e[type=minecraft:armor_stand] reddition.temp")
+        data modify entity @n[type=!minecraft:player] InLove set value 1000
     block_placer()
     block_breaker()
     conveyor()
     block_rotator()
     exporter()
     generator()
+    breeder()
 
     blocks_mcfunction.close()
 
