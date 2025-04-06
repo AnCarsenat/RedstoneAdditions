@@ -119,7 +119,7 @@ class Item:
         components.append(f'minecraft:item_name=\'{self.item_name}\'')
             
         # Only include custom_data if not in additional_item_data
-        components.append(f'minecraft:custom_data{{"{self.name}":true}}')
+        components.append(f'minecraft:custom_data={{"{self.name}":true}}')
             
         # Add additional item data if present
         if self.additional_item_data:
