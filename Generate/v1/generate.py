@@ -1,6 +1,6 @@
 import os
 import shutil
-from classic.assets import *
+from assets import BLOCKS, ITEMS
 from util import *
 
 DEVMODE = True

@@ -129,7 +129,7 @@ class Item:
     def generate_child_entities_selector(self):
         return f"@e[type={self.item_id},nbt={{Tags:{self.entity_tags}}}]"
 
-    def generate_child_entities_selector_from_id(self, id, long=False):
+    def generate_child_entities_selector_from_id(self, id, long=False, additional_tags=None):
         if long:
             return f"@e[type={id},nbt={{Tags:{self.entity_tags}}}]"
         return f"@e[type={id},tag={self.entity_tags[0]}]"
