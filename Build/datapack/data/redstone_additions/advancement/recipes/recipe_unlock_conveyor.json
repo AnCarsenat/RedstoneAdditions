@@ -1,0 +1,35 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_the_items": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "minecraft:cobblestone"
+                    },
+                    {
+                        "item": "minecraft:iron_ingot"
+                    },
+                    {
+                        "item": "minecraft:redstone"
+                    },
+                    {
+                        "item": "minecraft:copper_ingot"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_the_items"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "redstone_additions:blocks/conveyor"
+        ]
+    },
+    "sends_telemetry_event": true
+}

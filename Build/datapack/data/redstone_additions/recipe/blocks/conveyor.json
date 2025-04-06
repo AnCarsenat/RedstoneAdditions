@@ -7,9 +7,12 @@
         "###"
     ],
     "key": {
-        "#": "minecraft:cobblestone",
+        "#": [
+            "minecraft:cobblestone",
+            "minecraft:blackstone"
+        ],
         "R": "minecraft:redstone",
-        "C": "minecraft:copper_block",
+        "C": "minecraft:copper_ingot",
         "i": "minecraft:iron_ingot"
     },
     "result": {

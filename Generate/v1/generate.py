@@ -3,7 +3,7 @@ import shutil
 from assets import BLOCKS, ITEMS
 from util import *
 
-DEVMODE = True
+DEVMODE = False
 
 def clear_function_folder():
     function_dir = BUILD_DATAPACK_PATH+"/function"
@@ -44,7 +44,7 @@ def generate_block_place():
             item_frame_selector = block_data.generate_child_entities_selector()
             blocks_mcfunction.write(f"execute as {item_frame_selector} if entity @s[nbt={{Facing:{facing_id}b}}] ")
             blocks_mcfunction.write_line(
-                f"at @s align xyz run summon armor_stand ~0.5 ~ ~0.5 {{NoGravity:1b,Invisible:{not DEVMODE},"
+                f"at @s align xyz run summon armor_stand ~0.5 ~ ~0.5 {{NoGravity:1b,Invisible:{not DEVMODE},Marker:{not DEVMODE},"
                 f"Tags:{block_data.entity_tags},Rotation:[{180 if facing_dir=='north' else 0 if facing_dir=='south' else -90 if facing_dir=='east' else 90 if facing_dir=='west' else 0}f,"
                 f"{-90 if facing_dir=='up' else 90 if facing_dir=='down' else 0}f]}}")
             blocks_mcfunction.write(f"execute as {item_frame_selector} if entity @s[nbt={{Facing:{facing_id}b}}] ")
@@ -66,7 +66,7 @@ def generate_block_tick():
         blocks_mcfunction.write_line("#" + block_name)
         
 
-        print(block_data.block_place)
+        # print(block_data.block_place)
         # Only generate tick function if block has one defined
         if hasattr(block_data, 'block_place') and block_data.block_place and hasattr(block_data.block_place, 'blockTickMcfunction') and block_data.block_place.blockTickMcfunction:
             blocks_mcfunction.write_lines(block_data.block_place.block_tick.commands)

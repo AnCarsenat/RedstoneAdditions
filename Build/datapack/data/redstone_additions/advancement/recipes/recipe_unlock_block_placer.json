@@ -1,0 +1,35 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_the_items": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "minecraft:cobblestone"
+                    },
+                    {
+                        "item": "minecraft:dispenser"
+                    },
+                    {
+                        "item": "minecraft:redstone_block"
+                    },
+                    {
+                        "item": "minecraft:bow"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_the_items"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "redstone_additions:blocks/block_placer"
+        ]
+    },
+    "sends_telemetry_event": true
+}
