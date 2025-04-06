@@ -9,8 +9,10 @@ execute as @e[type=armor_stand,tag=reddition.blocks.block_place.block_breaker,ta
 tag @e[type=armor_stand,tag=reddition.blocks.block_place.block_breaker] remove triggered
 #conveyor
 execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s unless block ~ ~ ~ dispenser run kill @s
-execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if data block ~ ~ ~ Items[0] store success score @s reddition.temp run data modify block ^ ^0 ^1 Items append from block ~ ~ ~ Items[0]
-execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if score @s reddition.temp matches 1 run data remove block ~ ~ ~ Items[0]
+execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if block ~ ~ ~ dispenser[triggered=true] run function reddition:conveyor/move_item
+execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if data block ~ ~ ~ Items[0] store success score @s redstone_additions.temp run data modify block ^ ^ ^1 Items append from block ~ ~ ~ Items[0]
+execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if score @s redstone_additions.temp matches 1 run data remove block ~ ~ ~ Items[0]
+scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] redstone_additions.temp
 #block_rotator
 execute as @e[type=armor_stand,tag=reddition.blocks.block_place.block_rotator] at @s unless block ~ ~ ~ sticky_piston run kill @s
 #exporter

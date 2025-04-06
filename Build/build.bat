@@ -1,6 +1,6 @@
 rem Build datapack
 
-python "../Generate/v1/generate.py"
+rem python "../Generate/v1/generate.py"
 
 rem Copy datapack to datapack folder
 

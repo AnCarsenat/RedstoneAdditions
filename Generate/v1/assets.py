@@ -211,10 +211,22 @@ block_breaker_block_tick = BlockPlace.blockTickMcfunction(
 conveyor_block_tick = BlockPlace.blockTickMcfunction(
     name="conveyor",
     commands=[
-        f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['conveyor'].block_place.block} run kill @s",
-        f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id("armor_stand")} at @s if data block ~ ~ ~ Items[0] store success score @s reddition.temp run data modify block ^ ^0 ^1 Items append from block ~ ~ ~ Items[0]",
-        f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id("armor_stand")} at @s if score @s reddition.temp matches 1 run data remove block ~ ~ ~ Items[0]",
-    ],
+        # Remove conveyor if dispenser is broken
+        f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id('armor_stand')} at @s unless block ~ ~ ~ dispenser run kill @s",
+        
+        # Only activate when dispenser is powered
+        "execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if block ~ ~ ~ dispenser[triggered=true] run function reddition:conveyor/move_item",
+        
+        # When the conveyor activates:
+        # 1. Try to move first item from dispenser to next block
+        "execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if data block ~ ~ ~ Items[0] store success score @s redstone_additions.temp run data modify block ^ ^ ^1 Items append from block ~ ~ ~ Items[0]",
+        
+        # 2. If successful (temp=1), remove the item from source dispenser
+        "execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if score @s redstone_additions.temp matches 1 run data remove block ~ ~ ~ Items[0]",
+        
+        # Reset temp score
+        "scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] redstone_additions.temp"
+    ]
 )
 
 block_rotator_block_tick = BlockPlace.blockTickMcfunction(
@@ -273,6 +285,10 @@ BLOCKS["lava_reactor"].block_place.block_tick = lava_reactor_block_tick
 BLOCKS["mineral_reactor"].block_place.block_tick = mineral_reactor_block_tick
 BLOCKS["organic_reactor"].block_place.block_tick = organic_reactor_block_tick
 
-
 def BlockPlacerTick():
     raise NotImplementedError("BlockPlacerTick function is not implemented.")
+
+if __name__ == "__main__":
+    print("This module is not meant to be run directly.")
+    # You can add test cases or other functionality here if needed.
+    print(ITEMS["lava_core"].generate_item_summon_command())

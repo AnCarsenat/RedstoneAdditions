@@ -102,29 +102,40 @@ class Item:
         self.entity_tags = entity_tags
         self.block_place = block_place
 
+        # Initialize additional_item_data if None
+        if self.additional_item_data is None:
+            self.additional_item_data = ""
+
     def __str__(self):
         return f"{self.name}: {self.item_model}, {self.item_name}, {self.entity_data}"
 
     def generate_give_command(self):
-        entity_data = (
-            "{}"
-            if not self.entity_data
-            else {"id": self.entity_data["id"], "Tags": self.entity_tags}
-        )
-
-        command_parts = [
-            f"give @s {self.item_id}[",
-            f'minecraft:item_model="{self.item_model}",',
-            f"minecraft:item_name='{self.item_name}',",
-            f"minecraft:custom_data={{'{self.name}':true}},",
-        ]
-
+        # Add custom data tag for inventory checking
+        # Start building the components string
+        components = []
+        components.append(f'minecraft:item_model="{self.item_model}"')
+        
+        # Handle JSON text components correctly
+        components.append(f'minecraft:item_name=\'{self.item_name}\'')
+            
+        # Only include custom_data if not in additional_item_data
+        components.append(f'minecraft:custom_data{{"{self.name}":true}}')
+            
+        # Add additional item data if present
         if self.additional_item_data:
-            command_parts.append(self.additional_item_data + ",")
-        if self.entity_data:
-            command_parts.append(f"minecraft:entity_data={entity_data}")
+            # Remove the leading comma if present
+            clean_additional = self.additional_item_data.lstrip(',')
+            components.append(clean_additional)
+            
+        # Add entity data if present
+        if self.entity_data and self.entity_tags:
+            components.append(f'minecraft:entity_data={{id:"{self.entity_data["id"]}",Tags:{self.entity_tags}}}')
 
-        return "".join(command_parts) + "]"
+        # Join all components with commas
+        components_str = ','.join(filter(None, components))
+
+        # Create the final give command
+        return f"give @s {self.item_id}[{components_str}]"
 
     def generate_child_entities_selector(self):
         return f"@e[type={self.item_id},nbt={{Tags:{self.entity_tags}}}]"
@@ -133,6 +144,10 @@ class Item:
         if long:
             return f"@e[type={id},nbt={{Tags:{self.entity_tags}}}]"
         return f"@e[type={id},tag={self.entity_tags[0]}]"
+    
+    def generate_item_entity_selector(self):
+        # Check for item entity with custom data and specific tag
+        return f'@e[type=item,nbt={{Item:{{components:{{"minecraft:custom_data":{{{self.name}:true}}}}}}}}]'
 
     def generate_is_holding_item(self):
         return f"execute if entity @s[nbt={{SelectedItem:{{components:{{'minecraft:custom_data':{{ {self.name}:true}}}}}}}}] run"
@@ -141,7 +156,69 @@ class Item:
         if self.block_place:
             return self.block_place.facing_values
         return {}
+    
+    def get_recipe_result_format(self):
+        result = {
+            "id": self.item_id,
+            "components": {
+            "minecraft:item_name": self.item_name,
+            "minecraft:item_model": self.item_model,
+            "minecraft:custom_data": {
+                str(self.name): True
+            }
+            }
+        }
+        
+        if self.entity_data and self.entity_tags:
+            result["components"]["minecraft:entity_data"] = {
+                "id": self.entity_data["id"],
+                "Tags": self.entity_tags
+            }
 
+        result = str(result)
+        
+
+        result = result.replace("True", "true")
+
+        result = result.replace('"', "\\\"")
+        result = result.replace("'", '"')
+
+        return result
+    
+    def generate_item_summon_command(self):
+        """
+        Generates a summon command for an item based on its parameters.
+        This function is adaptable and replicable for other items.
+
+        Returns:
+            str: The summon command string.
+        """
+        # Start building the components string
+        components = []
+        components.append(f'"minecraft:item_model":"{self.item_model}"')
+        components.append(f'"minecraft:item_name":\'{self.item_name}\'')
+
+        # Only include custom_data if not already in additional_item_data
+        components.append(f'"minecraft:custom_data":{{"{self.name}":true}}')
+
+        # Add additional item data if present
+        if self.additional_item_data:
+            clean_additional = self.additional_item_data.lstrip(',')
+            components.append(clean_additional)
+
+        # Add entity data if present
+        if self.entity_data and self.entity_tags:
+            components.append(f'"minecraft:entity_data":{{id:"{self.entity_data["id"]}",Tags:{self.entity_tags}}}')
+
+        # Join components into a single string
+        components_str = ','.join(filter(None, components))
+        
+        # components_str = components_str.replace("=", ":")
+        components_str = components_str.replace("True", "true")
+        # Build the summon command
+
+        return f"summon item ~ ~ ~ {{Item:{{id:\"{self.item_id}\",Count:1b,components:{{{components_str}}}}}}}"
+    
     def get_block(self):
         if self.block_place:
             return self.block_place.block
