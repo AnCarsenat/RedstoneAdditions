@@ -6,23 +6,23 @@ Transform your redstone contraptions from simple circuits into incredible automa
 
 ## ✨ Quick Preview
 Take a look at what awaits you:
-![alt text](Assets/screenshots/2025-04-06_21.36.13.png)
+![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.36.13.png)
 
 ## 🔧 Amazing New Components
 <details><summary>🏗️ Block Placer</summary>
-![block placer](Assets/screenshots/2025-04-06_21.36.00.png)
+![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.36.00.png)
 </details>
 
 <details><summary>⚒️ Block Breaker</summary>
-![block breaker](Assets/screenshots/2025-04-06_21.35.31.png)
+![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.35.31.png)  
 </details>
 
 <details><summary>➡️ Conveyor</summary>
-![conveyor](Assets/screenshots/2025-04-06_21.34.47.png)
+![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.35.40.png)
 </details>
 
 <details><summary>🌋 Lava Reactor</summary>
-![lavagen](Assets/screenshots/2025-04-06_21.35.14.png)
+![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.35.14.png) 
 </details>
 
 
