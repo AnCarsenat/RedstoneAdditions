@@ -5,23 +5,27 @@ Welcome to the ultimate redstone enhancement datapack for Minecraft 1.21.4! Get 
 Transform your redstone contraptions from simple circuits into incredible automated machinery. Whether you're a technical player or just getting started with redstone, this datapack opens up exciting new possibilities! 
 
 ## ✨ Quick Preview
-Take a look at what awaits you:
-![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.36.13.png)
+Take a look at what awaits you:  
+![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.36.13.png)  
 
 ## 🔧 Amazing New Components
-<details><summary>🏗️ Block Placer</summary>
-![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.36.00.png)
+<details><summary>🏗️ Block Placer</summary>  
+  
+![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.36.00.png)  
 </details>
 
 <details><summary>⚒️ Block Breaker</summary>
+  
 ![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.35.31.png)  
 </details>
 
 <details><summary>➡️ Conveyor</summary>
+  
 ![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.35.40.png)
 </details>
 
 <details><summary>🌋 Lava Reactor</summary>
+  
 ![alt text](https://github.com/AnCarsenat/RedstoneAdditions/blob/main/Assets/screenshots/2025-04-06_21.35.14.png) 
 </details>
 
