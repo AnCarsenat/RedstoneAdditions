@@ -186,12 +186,29 @@ BLOCKS = {
         ),
         additional_item_data="",
     ),
+    "breeder": Item(
+        name="breeder",
+        item_id="minecraft:item_frame",
+        item_model="minecraft:dispenser",
+        item_name='[{"text":"breeder"}]',
+        entity_data={"id": "item_frame"},
+        entity_tags=[
+            "reddition.blocks.block_place.breeder",
+            "reddition.blocks",
+            "reddition.has_cooldown",
+        ],
+        block_place=BlockPlace(
+            block="dispenser", facing_type=BlockPlace.FacingTypes.ALL
+        ),
+        additional_item_data="",
+    ),
 }
 
 # Now create the block ticks
 block_placer_block_tick = BlockPlace.blockTickMcfunction(
     name="block_placer",
     commands=[
+        f"execute as {BLOCKS['block_placer'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_placer'].block_place.block} run {BLOCKS['block_placer'].generate_item_summon_command()}",
         f"execute as {BLOCKS['block_placer'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_placer'].block_place.block} run kill @s",
         f"execute at {BLOCKS['block_placer'].generate_child_entities_selector_from_id("armor_stand")} run function placeblocks:tick",
     ],
@@ -199,7 +216,8 @@ block_placer_block_tick = BlockPlace.blockTickMcfunction(
 
 block_breaker_block_tick = BlockPlace.blockTickMcfunction(
     name="block_breaker",
-    commands=[
+    commands=[       
+        f"execute as {BLOCKS['block_breaker'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_breaker'].block_place.block} run {BLOCKS['block_breaker'].generate_item_summon_command()}",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.block_breaker] at @s unless block ~ ~ ~ dispenser run kill @s",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.block_breaker] if score @s redstone_additions.delay matches 19.. at @s unless block ^ ^ ^1 #air run tag @s add triggered",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.block_breaker,tag=triggered] at @s if block ~ ~ ~ minecraft:dispenser[triggered=true] run setblock ^ ^0 ^1 air destroy",
@@ -212,6 +230,7 @@ conveyor_block_tick = BlockPlace.blockTickMcfunction(
     name="conveyor",
     commands=[
         # Remove conveyor if dispenser is broken
+        f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['conveyor'].block_place.block} run {BLOCKS['conveyor'].generate_item_summon_command()}",
         f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id('armor_stand')} at @s unless block ~ ~ ~ dispenser run kill @s",
         
         # Only activate when dispenser is powered
@@ -232,6 +251,7 @@ conveyor_block_tick = BlockPlace.blockTickMcfunction(
 block_rotator_block_tick = BlockPlace.blockTickMcfunction(
     name="block_rotator",
     commands=[
+        f"execute as {BLOCKS['block_rotator'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_rotator'].block_place.block} run {BLOCKS['block_rotator'].generate_item_summon_command()}",
         f"execute as {BLOCKS['block_rotator'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_rotator'].block_place.block} run kill @s"
     ],
 )
@@ -239,6 +259,7 @@ block_rotator_block_tick = BlockPlace.blockTickMcfunction(
 exporter_block_tick = BlockPlace.blockTickMcfunction(
     name="exporter",
     commands=[
+        f"execute as {BLOCKS['exporter'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['exporter'].block_place.block} run {BLOCKS['exporter'].generate_item_summon_command()}",
         f"execute as {BLOCKS['exporter'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['exporter'].block_place.block} run kill @s",
         f"execute as {BLOCKS['exporter'].generate_child_entities_selector_from_id("armor_stand")} at @s if data block ~ ~ ~ Items[0] store success score @s reddition.temp run data modify block ^ ^0 ^1 Items append from block ~ ~ ~ Items[0]",
         f"execute as {BLOCKS['exporter'].generate_child_entities_selector_from_id("armor_stand")} at @s if score @s reddition.temp matches 1 run data remove block ~ ~ ~ Items[0]",
@@ -249,6 +270,7 @@ exporter_block_tick = BlockPlace.blockTickMcfunction(
 lava_reactor_block_tick = BlockPlace.blockTickMcfunction(
     name="lava_reactor",
     commands=[
+        f"execute as {BLOCKS['lava_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['lava_reactor'].block_place.block} run {BLOCKS['lava_reactor'].generate_item_summon_command()}",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.lava_reactor] at @s unless block ~ ~ ~ dispenser run kill @s",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.lava_reactor] if score @s redstone_additions.delay matches 99.. at @s if block ^ ^ ^1 #air run tag @s add triggered",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.lava_reactor,tag=triggered] at @s if block ~ ~ ~ minecraft:dispenser[triggered=true] run setblock ^ ^0 ^1 lava keep",
@@ -260,6 +282,7 @@ lava_reactor_block_tick = BlockPlace.blockTickMcfunction(
 mineral_reactor_block_tick = BlockPlace.blockTickMcfunction(
     name="mineral_reactor",
     commands=[
+        f"execute as {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['mineral_reactor'].block_place.block} run {BLOCKS['mineral_reactor'].generate_item_summon_command()}",
         f"execute as {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['mineral_reactor'].block_place.block} run kill @s",
         f"execute as {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s run setblock ^ ^ ^1 stone keep",
         f"scoreboard players reset {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} redstone_additions.temp",
@@ -269,9 +292,20 @@ mineral_reactor_block_tick = BlockPlace.blockTickMcfunction(
 organic_reactor_block_tick = BlockPlace.blockTickMcfunction(
     name="organic_reactor",
     commands=[
+        f"execute as {BLOCKS['organic_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['organic_reactor'].block_place.block} run {BLOCKS['organic_reactor'].generate_item_summon_command()}",
         f"execute as {BLOCKS['organic_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['organic_reactor'].block_place.block} run kill @s",
         f"execute as {BLOCKS['organic_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s run setblock ^ ^ ^1 grass_block keep",
         f"scoreboard players reset {BLOCKS['organic_reactor'].generate_child_entities_selector_from_id("armor_stand")} redstone_additions.temp",
+    ],
+)
+
+breeder_block_tick = BlockPlace.blockTickMcfunction(
+    name="breeder",
+    commands=[
+    f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] at @s unless block ~ ~ ~ dispenser run {BLOCKS['breeder'].generate_item_summon_command()}",
+    f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] at @s unless block ~ ~ ~ dispenser run kill @s",
+    f"execute at @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] positioned ^ ^ ^1 run function redstone_additions:blocks/tick/breeder",
+    f"scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] redstone_additions.temp",
     ],
 )
 
@@ -284,6 +318,7 @@ BLOCKS["exporter"].block_place.block_tick = exporter_block_tick
 BLOCKS["lava_reactor"].block_place.block_tick = lava_reactor_block_tick
 BLOCKS["mineral_reactor"].block_place.block_tick = mineral_reactor_block_tick
 BLOCKS["organic_reactor"].block_place.block_tick = organic_reactor_block_tick
+BLOCKS["breeder"].block_place.block_tick = breeder_block_tick
 
 def BlockPlacerTick():
     raise NotImplementedError("BlockPlacerTick function is not implemented.")
