@@ -37,7 +37,7 @@ ITEMS = {
     "mineral_core": Item(
         name="mineral_core",
         item_id="minecraft:command_block",
-        item_model="minecraft:stone",
+        item_model="minecraft:smooth_stone",
         item_name='[{"color":"gray","text":"mineral core"}]',
         block_place=None,
         additional_item_data="minecraft:enchantment_glint_override=true,minecraft:max_stack_size=1",
@@ -87,7 +87,9 @@ BLOCKS = {
             "reddition.blocks",
             "reddition.has_cooldown",
         ],
-        block_place=BlockPlace(block="dispenser", facing_type=BlockPlace.FacingTypes.ALL),
+        block_place=BlockPlace(
+            block="dispenser", facing_type=BlockPlace.FacingTypes.ALL
+        ),
         additional_item_data="",
     ),
     "conveyor": Item(
@@ -216,7 +218,7 @@ block_placer_block_tick = BlockPlace.blockTickMcfunction(
 
 block_breaker_block_tick = BlockPlace.blockTickMcfunction(
     name="block_breaker",
-    commands=[       
+    commands=[
         f"execute as {BLOCKS['block_breaker'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_breaker'].block_place.block} run {BLOCKS['block_breaker'].generate_item_summon_command()}",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.block_breaker] at @s unless block ~ ~ ~ dispenser run kill @s",
         f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.block_breaker] if score @s redstone_additions.delay matches 19.. at @s unless block ^ ^ ^1 #air run tag @s add triggered",
@@ -232,27 +234,23 @@ conveyor_block_tick = BlockPlace.blockTickMcfunction(
         # Remove conveyor if dispenser is broken
         f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['conveyor'].block_place.block} run {BLOCKS['conveyor'].generate_item_summon_command()}",
         f"execute as {BLOCKS['conveyor'].generate_child_entities_selector_from_id('armor_stand')} at @s unless block ~ ~ ~ dispenser run kill @s",
-        
         # Only activate when dispenser is powered
         "execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if block ~ ~ ~ dispenser[triggered=true] run function reddition:conveyor/move_item",
-        
         # When the conveyor activates:
         # 1. Try to move first item from dispenser to next block
         "execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if data block ~ ~ ~ Items[0] store success score @s redstone_additions.temp run data modify block ^ ^ ^1 Items append from block ~ ~ ~ Items[0]",
-        
         # 2. If successful (temp=1), remove the item from source dispenser
         "execute as @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] at @s if score @s redstone_additions.temp matches 1 run data remove block ~ ~ ~ Items[0]",
-        
         # Reset temp score
-        "scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] redstone_additions.temp"
-    ]
+        "scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.conveyor] redstone_additions.temp",
+    ],
 )
 
 block_rotator_block_tick = BlockPlace.blockTickMcfunction(
     name="block_rotator",
     commands=[
         f"execute as {BLOCKS['block_rotator'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_rotator'].block_place.block} run {BLOCKS['block_rotator'].generate_item_summon_command()}",
-        f"execute as {BLOCKS['block_rotator'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_rotator'].block_place.block} run kill @s"
+        f"execute as {BLOCKS['block_rotator'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['block_rotator'].block_place.block} run kill @s",
     ],
 )
 
@@ -284,7 +282,10 @@ mineral_reactor_block_tick = BlockPlace.blockTickMcfunction(
     commands=[
         f"execute as {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['mineral_reactor'].block_place.block} run {BLOCKS['mineral_reactor'].generate_item_summon_command()}",
         f"execute as {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s unless block ~ ~ ~ {BLOCKS['mineral_reactor'].block_place.block} run kill @s",
-        f"execute as {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} at @s run setblock ^ ^ ^1 stone keep",
+        f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] if score @s redstone_additions.delay matches 200.. at @s if block ^ ^ ^1 #air run tag @s add triggered",
+        f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor,tag=triggered] at @s if block ~ ~ ~ minecraft:dispenser[triggered=true] run function redstone_additions:blocks/tick/mineral_reactor",
+        f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor,tag=triggered] run scoreboard players set @s redstone_additions.delay 0",
+        f"tag @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] remove triggered",
         f"scoreboard players reset {BLOCKS['mineral_reactor'].generate_child_entities_selector_from_id("armor_stand")} redstone_additions.temp",
     ],
 )
@@ -302,10 +303,10 @@ organic_reactor_block_tick = BlockPlace.blockTickMcfunction(
 breeder_block_tick = BlockPlace.blockTickMcfunction(
     name="breeder",
     commands=[
-    f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] at @s unless block ~ ~ ~ dispenser run {BLOCKS['breeder'].generate_item_summon_command()}",
-    f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] at @s unless block ~ ~ ~ dispenser run kill @s",
-    f"execute at @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] positioned ^ ^ ^1 run function redstone_additions:blocks/tick/breeder",
-    f"scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] redstone_additions.temp",
+        f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] at @s unless block ~ ~ ~ dispenser run {BLOCKS['breeder'].generate_item_summon_command()}",
+        f"execute as @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] at @s unless block ~ ~ ~ dispenser run kill @s",
+        f"execute at @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] positioned ^ ^ ^1 run function redstone_additions:blocks/tick/breeder",
+        f"scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.breeder] redstone_additions.temp",
     ],
 )
 
@@ -320,10 +321,12 @@ BLOCKS["mineral_reactor"].block_place.block_tick = mineral_reactor_block_tick
 BLOCKS["organic_reactor"].block_place.block_tick = organic_reactor_block_tick
 BLOCKS["breeder"].block_place.block_tick = breeder_block_tick
 
+
 def BlockPlacerTick():
     raise NotImplementedError("BlockPlacerTick function is not implemented.")
+
 
 if __name__ == "__main__":
     print("This module is not meant to be run directly.")
     # You can add test cases or other functionality here if needed.
-    print(ITEMS["lava_core"].generate_item_summon_command())
+    print(ITEMS["mineral_core"].generate_item_entity_selector())

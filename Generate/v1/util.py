@@ -197,14 +197,20 @@ class Item:
         components = []
         components.append(f'"minecraft:item_model":"{self.item_model}"')
         components.append(f'"minecraft:item_name":\'{self.item_name}\'')
-
-        # Only include custom_data if not already in additional_item_data
         components.append(f'"minecraft:custom_data":{{"{self.name}":true}}')
 
-        # Add additional item data if present
+        # Handle additional item data if present
         if self.additional_item_data:
-            clean_additional = self.additional_item_data.lstrip(',')
-            components.append(clean_additional)
+            # Split and process each additional data item
+            for item in self.additional_item_data.split(','):
+                if '=' in item:
+                    key, value = item.split('=')
+                    # Format value without quotes for booleans and numbers
+                    if value.lower() in ['true', 'false'] or value.isdigit():
+                        formatted_value = value.lower()
+                    else:
+                        formatted_value = f'"{value}"'
+                    components.append(f'"{key}":{formatted_value}')
 
         # Add entity data if present
         if self.entity_data and self.entity_tags:
@@ -212,10 +218,6 @@ class Item:
 
         # Join components into a single string
         components_str = ','.join(filter(None, components))
-        
-        # components_str = components_str.replace("=", ":")
-        components_str = components_str.replace("True", "true")
-        # Build the summon command
 
         return f"summon item ~ ~ ~ {{Item:{{id:\"{self.item_id}\",Count:1b,components:{{{components_str}}}}}}}"
     

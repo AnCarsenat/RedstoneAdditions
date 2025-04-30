@@ -36,7 +36,10 @@ tag @e[type=armor_stand,tag=reddition.blocks.block_place.lava_reactor,tag=trigge
 #mineral_reactor
 execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] at @s unless block ~ ~ ~ dispenser run summon item ~ ~ ~ {Item:{id:"minecraft:item_frame",Count:1b,components:{"minecraft:item_model":"minecraft:dispenser","minecraft:item_name":'[{"text":"mineral_reactor"}]',"minecraft:custom_data":{"mineral_reactor":true},"minecraft:entity_data":{id:"item_frame",Tags:['reddition.blocks.block_place.mineral_reactor', 'reddition.blocks', 'reddition.has_cooldown']}}}}
 execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] at @s unless block ~ ~ ~ dispenser run kill @s
-execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] at @s run setblock ^ ^ ^1 stone keep
+execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] if score @s redstone_additions.delay matches 200.. at @s if block ^ ^ ^1 #air run tag @s add triggered
+execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor,tag=triggered] at @s if block ~ ~ ~ minecraft:dispenser[triggered=true] run function redstone_additions:blocks/tick/mineral_reactor
+execute as @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor,tag=triggered] run scoreboard players set @s redstone_additions.delay 0
+tag @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] remove triggered
 scoreboard players reset @e[type=armor_stand,tag=reddition.blocks.block_place.mineral_reactor] redstone_additions.temp
 #organic_reactor
 execute as @e[type=armor_stand,tag=reddition.blocks.block_place.organic_reactor] at @s unless block ~ ~ ~ dispenser run summon item ~ ~ ~ {Item:{id:"minecraft:item_frame",Count:1b,components:{"minecraft:item_model":"minecraft:dispenser","minecraft:item_name":'[{"text":"organic_reactor"}]',"minecraft:custom_data":{"organic_reactor":true},"minecraft:entity_data":{id:"item_frame",Tags:['reddition.blocks.block_place.organic_reactor', 'reddition.blocks', 'reddition.has_cooldown']}}}}
