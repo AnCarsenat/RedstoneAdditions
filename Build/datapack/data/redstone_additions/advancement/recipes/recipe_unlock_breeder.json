@@ -3,7 +3,7 @@
     "criteria": {
         "has_the_recipe": {
             "conditions": {
-                "recipe": "redstone_additions:blocks/block_breaker"
+                "recipe": "redstone_additions:blocks/breeder"
             },
             "trigger": "minecraft:recipe_unlocked"
         },
@@ -26,7 +26,7 @@
     ],
     "rewards": {
         "recipes": [
-            "redstone_additions:blocks/block_breaker"
+            "redstone_additions:blocks/breeder"
         ]
     },
     "sends_telemetry_event": true

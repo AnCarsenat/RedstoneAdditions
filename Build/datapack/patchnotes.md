@@ -1,6 +1,20 @@
 # Redstone Additions Datapack - Patch Notes
 
-## Version 1.1.0 (Latest)
+## Version 1.1.2 (Latest)
+
+### Added
+- Settings : Enable/Disable certain blocsk (WIP)
+
+### Changed
+- 
+
+### Fixed
+- Recipes and advancements
+
+### Removed
+- 
+
+## Version 1.1.1 (Previous)
 
 ### Added
 - Breeder: Breeds animals
@@ -14,7 +28,7 @@
 ### Removed
 - 
 
-## Version 1.0.1 (Previous)
+## Version 1.0.1 ()
 
 ### Added
 - Block rotator: Rotates blocks in front of it when powered (WIP)
