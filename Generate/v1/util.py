@@ -116,7 +116,7 @@ class Item:
         components.append(f'minecraft:item_model="{self.item_model}"')
         
         # Handle JSON text components correctly
-        components.append(f'minecraft:item_name=\'{self.item_name}\'')
+        components.append(f'minecraft:item_name={self.item_name}')
             
         # Only include custom_data if not in additional_item_data
         components.append(f'minecraft:custom_data={{"{self.name}":true}}')
@@ -196,7 +196,7 @@ class Item:
         # Start building the components string
         components = []
         components.append(f'"minecraft:item_model":"{self.item_model}"')
-        components.append(f'"minecraft:item_name":\'{self.item_name}\'')
+        components.append(f'"minecraft:item_name":{self.item_name}')
         components.append(f'"minecraft:custom_data":{{"{self.name}":true}}')
 
         # Handle additional item data if present
@@ -219,7 +219,7 @@ class Item:
         # Join components into a single string
         components_str = ','.join(filter(None, components))
 
-        return f"summon item ~ ~ ~ {{Item:{{id:\"{self.item_id}\",Count:1b,components:{{{components_str}}}}}}}"
+        return f"summon item ~ ~ ~ {{Item:{{id:\"{self.item_id}\",count:1,components:{{{components_str}}}}}}}"
     
     def get_block(self):
         if self.block_place:

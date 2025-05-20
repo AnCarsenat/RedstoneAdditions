@@ -1,6 +1,26 @@
 # Redstone Additions Datapack - Patch Notes
+RELEASES
+---
+## Version 1.1.3 [THE SURVIFUL UPDATE] (Latest) 1.21.5
 
-## Version 1.1.2 (Latest)
+### Added
+- Blocks now drop
+
+### Changed
+- 
+
+### Fixed
+- Dispenser dupe
+- Generate script clean up
+- Adapted to new version (1.21.4=>1.21.5)
+- Block breakers breaking bedrock
+
+### Removed
+- 
+
+ALPHA
+---
+## Version 1.1.2 (Previous) 1.21.4
 
 ### Added
 - Settings : Enable/Disable certain blocsk (WIP)
@@ -14,7 +34,7 @@
 ### Removed
 - 
 
-## Version 1.1.1 (Previous)
+## Version 1.1.1 ()
 
 ### Added
 - Breeder: Breeds animals
@@ -42,8 +62,9 @@
 
 ### Removed
 - 
-
-## Version 1.0.0 (ALPHA)
+BETA
+---
+## Version 1.0.0 ()
 
 ### Added
 - Block breaker: Automatically breaks blocks in front of it when powered
