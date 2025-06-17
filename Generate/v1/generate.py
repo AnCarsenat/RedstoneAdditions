@@ -102,7 +102,7 @@ def main():
     # clear_function_folder()
     #create_folder_structure()
     generate_block_place()
-    generate_block_tick()
+    # generate_block_tick()
     generate_item_gives()
 
 if __name__ == "__main__":

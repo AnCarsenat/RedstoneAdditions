@@ -1,7 +1,25 @@
 # Redstone Additions Datapack - Patch Notes
 RELEASES
 ---
-## Version 1.1.3 [THE SURVIFUL UPDATE] (Latest) 1.21.5
+## Version 1.1.3 [THE KILL THE BUGS UPDATE] (Latest) 1.21.5
+
+### Added
+- Blocks now drop
+- Recipe pictures
+
+### Changed
+- 
+
+### Fixed
+- Dispenser dupe (REFIX)
+- Generate script clean up
+- Adapted to new version (1.21.4=>1.21.5)
+
+### Removed
+- 
+
+---
+## Version 1.1.3 [THE SURVIFUL UPDATE] (Previous) 1.21.5
 
 ### Added
 - Blocks now drop
@@ -20,7 +38,7 @@ RELEASES
 
 ALPHA
 ---
-## Version 1.1.2 (Previous) 1.21.4
+## Version 1.1.2 1.21.4
 
 ### Added
 - Settings : Enable/Disable certain blocsk (WIP)
