@@ -15,7 +15,7 @@
     "result": {
         "id": "minecraft:command_block",
         "components": {
-            "minecraft:item_name": "[{\"text\":\"reactor\"}]",
+            "minecraft:item_name": {"text":"reactor"},
             "minecraft:item_model": "minecraft:waxed_exposed_copper_grate",
             "minecraft:custom_data": {
                 "reactor": true

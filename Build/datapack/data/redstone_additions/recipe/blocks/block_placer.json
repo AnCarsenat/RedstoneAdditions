@@ -18,7 +18,7 @@
     "result": {
         "id": "minecraft:item_frame",
         "components": {
-            "minecraft:item_name": "[{\"text\":\"block_placer\"}]",
+            "minecraft:item_name": {"text":"block_placer"},
             "minecraft:item_model": "minecraft:dispenser",
             "minecraft:custom_data": {
                 "block_placer": true

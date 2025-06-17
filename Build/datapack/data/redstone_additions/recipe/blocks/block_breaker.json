@@ -18,7 +18,7 @@
     "result": {
         "id": "minecraft:item_frame",
         "components": {
-            "minecraft:item_name": "[{\"text\":\"block_breaker\"}]",
+            "minecraft:item_name": {"text":"block_breaker"},
             "minecraft:item_model": "minecraft:dispenser",
             "minecraft:entity_data": {
                 "id": "item_frame",

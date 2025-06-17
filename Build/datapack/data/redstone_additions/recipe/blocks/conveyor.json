@@ -18,7 +18,7 @@
     "result": {
         "id": "minecraft:item_frame",
         "components": {
-            "minecraft:item_name": "[{\"text\":\"conveyor\"}]",
+            "minecraft:item_name": {"text":"conveyor"},
             "minecraft:item_model": "minecraft:dropper",
             "minecraft:custom_data": {
                 "conveyor": true

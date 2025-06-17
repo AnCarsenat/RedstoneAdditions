@@ -2,14 +2,17 @@ rem Build datapack
 
 rem python "../Generate/v1/generate.py"
 
-rem Copy datapack to datapack folder
+rem Copy datapack to DevWorld datapacks folder
+echo Current directory: %CD%
 
-echo %CD%
+rem Create destination folder if it doesn't exist
+if not exist "C:\Users\antoi\AppData\Roaming\.minecraft\saves\DevWorld\datapacks\datapack" mkdir "C:\Users\antoi\AppData\Roaming\.minecraft\saves\DevWorld\datapacks\datapack"
 
-rem remove old datapack folder if it exists (only useful for testing)
-rem if exist "..\..\datapack" rmdir /S /Q "..\..\datapack"
-
-if not exist "%CD%\datapack" mkdir "%CD%\datapack"
+rem Create exclude file
 echo data\placeblocks > exclude.txt
-xcopy /E /I /Y "%CD%\datapack" "..\..\datapack" /EXCLUDE:exclude.txt
-rem add /EXCLUDE:exclude.txt to exclude files from the copy
+
+rem Copy datapack files to destination
+xcopy /E /I /Y "%CD%\datapack\*" "C:\Users\antoi\AppData\Roaming\.minecraft\saves\DevWorld\datapacks\datapack" /EXCLUDE:exclude.txt
+
+rem Clean up exclude file
+del exclude.txt

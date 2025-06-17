@@ -1,5 +1,5 @@
 # Initialize block place functions for Redstone Additions
-function reddition_main:blocks/blocks_place
+function redstone_additions:blocks/place/all_blocks
 
 # Initialize block functions for Redstone Additions
 function redstone_additions:blocks/block_breaker

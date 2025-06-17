@@ -50,7 +50,9 @@ def generate_block_place():
             blocks_mcfunction.write(f"execute as {item_frame_selector} if entity @s[nbt={{Facing:{facing_id}b}}] ")
             blocks_mcfunction.write_line(f"as @e[type=minecraft:armor_stand,tag={block_data.entity_tags[0]}] at @s run setblock ~ ~ ~ {block_data.block_place.block}[facing={facing_dir}] keep")
             blocks_mcfunction.write_line(f"execute as {item_frame_selector} if entity @s[nbt={{Facing:{facing_id}b}}] run kill @s")
-
+    blocks_mcfunction.write_line("\n")
+    blocks_mcfunction.write_line("# LOOP")
+    blocks_mcfunction.write_line("schedule function redstone_additions:blocks/place/all_blocks 1t")
     blocks_mcfunction.close()
 
 # REMOVED BLOCK TICK GENERATION BECAUSE IT IS DEPRECATED AND TICK WILL BE WRITTEN MANUALLY

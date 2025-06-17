@@ -177,9 +177,17 @@ class Item:
 
         result = str(result)
         
+        # Handle item_name format conversion - remove array brackets and convert to object format
+        if isinstance(self.item_name, str) and self.item_name.startswith('[{') and self.item_name.endswith('}]'):
+            # Extract the content between [{ and }]
+            inner_content = self.item_name[2:-2]
+            result = result.replace(f"'{self.item_name}'", f'"{{{inner_content}}}"')
+        elif isinstance(self.item_name, str) and '"text":' in self.item_name:
+            # If it's already in the correct format, just clean up quotes
+            clean_name = self.item_name.replace("'", '"')
+            result = result.replace(f"'{self.item_name}'", clean_name)
 
         result = result.replace("True", "true")
-
         result = result.replace('"', "\\\"")
         result = result.replace("'", '"')
 
@@ -194,32 +202,43 @@ class Item:
             str: The summon command string.
         """
         # Start building the components string
-        components = []
-        components.append(f'minecraft:item_model="{self.item_model}"')
-        components.append(f'minecraft:item_name={self.item_name}')
-        components.append(f'minecraft:custom_data={{"{self.name}":true}}')
-
-        # Handle additional item data if present
+        components_parts = []
+        
+        # Add item model
+        components_parts.append(f'"minecraft:item_model":"{self.item_model}"')
+        
+        # Add item name - handle proper JSON formatting
+        if isinstance(self.item_name, str):
+            # If it's already a string, use it directly
+            item_name_json = self.item_name
+        else:
+            # Convert to proper JSON format
+            item_name_json = str(self.item_name).replace("'", '"')
+        components_parts.append(f'"minecraft:item_name":{item_name_json}')
+        
+        # Add custom data
+        components_parts.append(f'"minecraft:custom_data":{{"{self.name}":true}}')
+        
+        # Add additional item data if present
         if self.additional_item_data:
-            # Split and process each additional data item
-            for item in self.additional_item_data.split(','):
-                if '=' in item:
-                    key, value = item.split('=')
-                    # Format value without quotes for booleans and numbers
-                    if value.lower() in ['true', 'false'] or value.isdigit():
-                        formatted_value = value.lower()
-                    else:
-                        formatted_value = f'"{value}"'
-                    components.append(f'{key}={formatted_value}')
-
+            clean_additional = self.additional_item_data.strip()
+            if clean_additional.startswith(','):
+                clean_additional = clean_additional[1:]
+                if clean_additional:
+                    # Ensure proper quoting for component keys
+                    if not clean_additional.startswith('"minecraft:'):
+                        clean_additional = f'"{clean_additional}"'
+                    components_parts.append(clean_additional)
+            
         # Add entity data if present
         if self.entity_data and self.entity_tags:
-            components.append(f'minecraft:entity_data={{id:"{self.entity_data["id"]}",Tags:{self.entity_tags}}}')
-
-        # Join components into a single string
-        components_str = ','.join(filter(None, components))
-
-        return f"summon item ~ ~ ~ {{Item:{{id:\"{self.item_id}\",count:1,components:[{components_str}]}}}}"
+            entity_tags_str = str(self.entity_tags).replace("'", '"')
+            components_parts.append(f'"minecraft:entity_data":{{id:"{self.entity_data["id"]}",Tags:{entity_tags_str}}}')
+        
+        # Join all components
+        components_str = ','.join(components_parts)
+        
+        return f'summon item ~ ~ ~ {{Item:{{id:"{self.item_id}",count:1,components:{{{components_str}}}}}}}'
 
     def get_block(self):
         if self.block_place:
@@ -249,3 +268,5 @@ def setup_working_directory():
 
 def make_necessary_folder(file_path):
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+

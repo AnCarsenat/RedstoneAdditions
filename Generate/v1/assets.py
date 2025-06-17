@@ -182,4 +182,6 @@ def BlockPlacerTick():
 if __name__ == "__main__":
     print("This module is not meant to be run directly.")
     # You can add test cases or other functionality here if needed.
-    print(ITEMS["mineral_core"].generate_item_entity_selector())
+    print(BLOCKS["lava_reactor"].generate_item_summon_command())
+
+
