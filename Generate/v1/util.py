@@ -87,7 +87,7 @@ class Item:
         name,
         item_id: str,
         item_model: str,
-        item_name: str,
+        item_name: dict,
         additional_item_data: str,
         entity_data: str = None,
         entity_tags: list[str] = None,
@@ -195,9 +195,9 @@ class Item:
         """
         # Start building the components string
         components = []
-        components.append(f'"minecraft:item_model":"{self.item_model}"')
-        components.append(f'"minecraft:item_name":{self.item_name}')
-        components.append(f'"minecraft:custom_data":{{"{self.name}":true}}')
+        components.append(f'minecraft:item_model="{self.item_model}"')
+        components.append(f'minecraft:item_name={self.item_name}')
+        components.append(f'minecraft:custom_data={{"{self.name}":true}}')
 
         # Handle additional item data if present
         if self.additional_item_data:
@@ -210,17 +210,17 @@ class Item:
                         formatted_value = value.lower()
                     else:
                         formatted_value = f'"{value}"'
-                    components.append(f'"{key}":{formatted_value}')
+                    components.append(f'{key}={formatted_value}')
 
         # Add entity data if present
         if self.entity_data and self.entity_tags:
-            components.append(f'"minecraft:entity_data":{{id:"{self.entity_data["id"]}",Tags:{self.entity_tags}}}')
+            components.append(f'minecraft:entity_data={{id:"{self.entity_data["id"]}",Tags:{self.entity_tags}}}')
 
         # Join components into a single string
         components_str = ','.join(filter(None, components))
 
-        return f"summon item ~ ~ ~ {{Item:{{id:\"{self.item_id}\",count:1,components:{{{components_str}}}}}}}"
-    
+        return f"summon item ~ ~ ~ {{Item:{{id:\"{self.item_id}\",count:1,components:[{components_str}]}}}}"
+
     def get_block(self):
         if self.block_place:
             return self.block_place.block

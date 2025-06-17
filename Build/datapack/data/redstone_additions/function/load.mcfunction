@@ -12,3 +12,7 @@ data modify storage redstone_additions:settings.blocks LavaGenerator set value 1
 data modify storage redstone_additions:settings.blocks MineralGenerator set value 1
 data modify storage redstone_additions:settings.blocks Conveyor set value 1
 data modify storage redstone_additions:settings.blocks Breeder set value 1
+
+function redstone_additions:blocks/initialize
+function redstone_additions:crafting/craft_tick
+

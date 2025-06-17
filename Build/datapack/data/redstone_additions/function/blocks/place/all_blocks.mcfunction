@@ -163,3 +163,5 @@ execute as @e[type=minecraft:item_frame,nbt={Tags:['reddition.blocks.block_place
 execute as @e[type=minecraft:item_frame,nbt={Tags:['reddition.blocks.block_place.breeder', 'reddition.blocks', 'reddition.has_cooldown']}] if entity @s[nbt={Facing:5b}] at @s align xyz run summon armor_stand ~0.5 ~ ~0.5 {NoGravity:1b,Invisible:True,Marker:True,Tags:['reddition.blocks.block_place.breeder', 'reddition.blocks', 'reddition.has_cooldown'],Rotation:[-90f,0f]}
 execute as @e[type=minecraft:item_frame,nbt={Tags:['reddition.blocks.block_place.breeder', 'reddition.blocks', 'reddition.has_cooldown']}] if entity @s[nbt={Facing:5b}] as @e[type=minecraft:armor_stand,tag=reddition.blocks.block_place.breeder] at @s run setblock ~ ~ ~ minecraft:dispenser[facing=east] keep
 execute as @e[type=minecraft:item_frame,nbt={Tags:['reddition.blocks.block_place.breeder', 'reddition.blocks', 'reddition.has_cooldown']}] if entity @s[nbt={Facing:5b}] run kill @s
+
+schedule function redstone_additions:blocks/place/all_blocks 1t

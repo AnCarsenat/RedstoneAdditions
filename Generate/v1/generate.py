@@ -53,31 +53,32 @@ def generate_block_place():
 
     blocks_mcfunction.close()
 
-def generate_block_tick():
-    blocks_mcfunction = Mcfunction(
-        BUILD_DATAPACK_PATH+r"/data/redstone_additions/function/blocks/tick/all_blocks.mcfunction"
-    )
-    blocks_mcfunction.clear_file()
+# REMOVED BLOCK TICK GENERATION BECAUSE IT IS DEPRECATED AND TICK WILL BE WRITTEN MANUALLY
+# def generate_block_tick():
+#     blocks_mcfunction = Mcfunction(
+#         BUILD_DATAPACK_PATH+r"/data/redstone_additions/function/blocks/tick/all_blocks.mcfunction"
+#     )
+#     blocks_mcfunction.clear_file()
 
-    # Add your block tick functions here
-    for block_name, block_data in BLOCKS.items():
-        print(f"Generate [BLOCK_TICK] ({block_name}) blocks {list(BLOCKS.keys()).index(block_name) + 1} out of {len(BLOCKS)}")
+#     # Add your block tick functions here
+#     for block_name, block_data in BLOCKS.items():
+#         print(f"Generate [BLOCK_TICK] ({block_name}) blocks {list(BLOCKS.keys()).index(block_name) + 1} out of {len(BLOCKS)}")
         
-        blocks_mcfunction.write_line("#" + block_name)
+#         blocks_mcfunction.write_line("#" + block_name)
         
 
-        # print(block_data.block_place)
-        # Only generate tick function if block has one defined
-        if hasattr(block_data, 'block_place') and block_data.block_place and hasattr(block_data.block_place, 'blockTickMcfunction') and block_data.block_place.blockTickMcfunction:
-            blocks_mcfunction.write_lines(block_data.block_place.block_tick.commands)
+#         # print(block_data.block_place)
+#         # Only generate tick function if block has one defined
+#         if hasattr(block_data, 'block_place') and block_data.block_place and hasattr(block_data.block_place, 'blockTickMcfunction') and block_data.block_place.blockTickMcfunction:
+#             blocks_mcfunction.write_lines(block_data.block_place.block_tick.commands)
 
 
-    blocks_mcfunction.write_line("scoreboard players add @e[tag=reddition.has_cooldown] redstone_additions.delay 1")
-    blocks_mcfunction.write_line("# End of block tick functions")
+#     blocks_mcfunction.write_line("scoreboard players add @e[tag=reddition.has_cooldown] redstone_additions.delay 1")
+#     blocks_mcfunction.write_line("# End of block tick functions")
 
 
-    blocks_mcfunction.close()
-    print("Generate [BLOCK_TICK] ENDED SUCCESSFULLY")
+#     blocks_mcfunction.close()
+#     print("Generate [BLOCK_TICK] ENDED SUCCESSFULLY")
 
 def generate_item_gives():
     items_mcfunction = Mcfunction(
@@ -99,10 +100,9 @@ def generate_item_gives():
 
 def main():
     setup_working_directory()
-    # clear_function_folder()
-    #create_folder_structure()
+    # clear_function_folder() # Uncomment to clear the function folder
+    #create_folder_structure() # Uncomment to create folder structure (use if bugged)
     generate_block_place()
-    # generate_block_tick()
     generate_item_gives()
 
 if __name__ == "__main__":

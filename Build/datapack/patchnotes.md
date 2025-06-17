@@ -1,7 +1,24 @@
 # Redstone Additions Datapack - Patch Notes
 RELEASES
+
 ---
-## Version 1.1.3 [THE KILL THE BUGS UPDATE] (Latest) 1.21.5
+## Version 1.1.3 [THE MR CLEAN UPDATE] (Latest) 1.21.5
+Cleaned up source code
+### Added
+- 
+
+### Changed
+- 
+
+### Fixed
+- Block placer not functioning (critical)
+
+### Removed
+- Block rotator (unused)
+- Exporter (unused)
+
+---
+## Version 1.1.3 [THE KILL THE BUGS UPDATE] (Previous) 1.21.5
 
 ### Added
 - Blocks now drop
@@ -19,7 +36,7 @@ RELEASES
 - 
 
 ---
-## Version 1.1.3 [THE SURVIFUL UPDATE] (Previous) 1.21.5
+## Version 1.1.3 [THE SURVIFUL UPDATE] 1.21.5
 
 ### Added
 - Blocks now drop
