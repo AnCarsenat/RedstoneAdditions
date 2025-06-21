@@ -2,8 +2,9 @@
 RELEASES
 
 ---
-## Version 1.1.3 [THE MR CLEAN UPDATE] (Latest) 1.21.5
+## Version 1.2.0 [THE MR CLEAN UPDATE] (Latest) BETA 1.21.6
 Cleaned up source code
+Removed out of date libraries
 ### Added
 - 
 
@@ -16,9 +17,11 @@ Cleaned up source code
 ### Removed
 - Block rotator (unused)
 - Exporter (unused)
+- Block Placer (temporary)
+*block placer removed temporarly because library I was using did not get updated to latest*
 
 ---
-## Version 1.1.3 [THE KILL THE BUGS UPDATE] (Previous) 1.21.5
+## Version 1.1.4 [THE KILL THE BUGS UPDATE] (Previous) 1.21.5
 
 ### Added
 - Blocks now drop

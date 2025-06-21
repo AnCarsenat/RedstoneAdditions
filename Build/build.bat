@@ -9,7 +9,12 @@ rem Create destination folder if it doesn't exist
 if not exist "C:\Users\antoi\AppData\Roaming\.minecraft\saves\DevWorld\datapacks\datapack" mkdir "C:\Users\antoi\AppData\Roaming\.minecraft\saves\DevWorld\datapacks\datapack"
 
 rem Create exclude file
-echo data\placeblocks > exclude.txt
+echo  > exclude.txt
+echo data\placeblocks\predicates\ >> exclude.txt
+echo data\placeblocks\tags\ >> exclude.txt
+echo data\placeblocks\function\place_current\ >> exclude.txt
+echo data\placeblocks\predicate\ >> exclude.txt
+
 
 rem Copy datapack files to destination
 xcopy /E /I /Y "%CD%\datapack\*" "C:\Users\antoi\AppData\Roaming\.minecraft\saves\DevWorld\datapacks\datapack" /EXCLUDE:exclude.txt
