@@ -1,5 +1,5 @@
 # ⚡ Redstone Additions - Automate Minecraft! ⚡
-
+## DATAPACK HAS BEEN REWRITTEN TO THE FOLLOWING URL : https://modrinth.com/datapack/redstone-additions-v3 https://github.com/AnCarsenat/Redstone-Additions-V3
 Welcome to the ultimate redstone enhancement datapack for Minecraft 1.21.4! Get ready to revolutionize your redstone builds with powerful new components and mechanics.
 
 Transform your redstone contraptions from simple circuits into incredible automated machinery. Whether you're a technical player or just getting started with redstone, this datapack opens up exciting new possibilities! 
